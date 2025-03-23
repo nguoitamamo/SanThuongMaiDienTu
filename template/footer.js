@@ -4,19 +4,23 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-// Import các màn hình
-import Product from "../components/Product";
-import TaiKhoan from "../components/TaiKhoan";
-import Thuong from "../components/Thuong";
-import DonHang from "../components/DonHang";
-import ProfileScreen from "../components/ThongTinCaNhan";
-import SignUp from "../components/SignUp";
-import SignIn from "../components/Signin";
-import GioHang from "../components/GioHang";
-import XacNhanDangKiBanHangChoKhachHang from "../components/taikhoanComponent/XacNhanBanHang";
-import QuanLiCuaHang from "../components/taikhoanComponent/QuanLiCuaHang";
-import CapNhatMatKhau from "../components/taikhoanComponent/CapNhatMatKhau";
-import UuDaiCuaBan from "../components/taikhoanComponent/UuDaiCuaBan";
+
+
+import Product from "../pages/Product";
+import TaiKhoan from "../pages/TaiKhoan";
+import Thuong from "../pages/Thuong";
+import DonHang from "../pages/DonHang";
+import ProfileScreen from "../pages/ThongTinCaNhan";
+import SignUp from "../pages/SignUp";
+import SignIn from "../pages/Signin";
+import GioHang from "../pages/GioHang";
+import XacNhanDangKiBanHangChoKhachHang from "../pages/taikhoanComponent/XacNhanBanHang";
+import QuanLiCuaHang from "../pages/taikhoanComponent/QuanLiCuaHang";
+import CapNhatMatKhau from "../pages/taikhoanComponent/CapNhatMatKhau";
+import UuDaiCuaBan from "../pages/taikhoanComponent/UuDaiCuaBan";
+
+
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
