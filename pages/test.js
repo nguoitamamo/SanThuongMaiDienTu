@@ -1,49 +1,61 @@
-import React from 'react';
-import { ScrollView, View, Image, Dimensions } from 'react-native';
-import { Card, Title, Paragraph } from 'react-native-paper';
+import React, { useState } from "react";
+import { View, Image, Button, Alert } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 
-const { width } = Dimensions.get('window');
+const ImageUploader = () => {
+  const [selectedImage, setSelectedImage] = useState(null);
 
-const providers = [
-  {
-    id: 1,
-    title: 'XÁC THỰC',
-    image: 'https://via.placeholder.com/300',
-    description: 'Nhóm nhà cung cấp xác thực.',
-  },
-  {
-    id: 2,
-    title: 'BÁN CHẠY',
-    image: 'https://via.placeholder.com/300',
-    description: 'Nhóm nhà cung cấp bán chạy.',
-  },
-  {
-    id: 3,
-    title: 'NẠP ĐẾN 80K',
-    image: 'https://via.placeholder.com/300',
-    description: 'Ưu đãi nạp tiền lên đến 80K.',
-  },
-];
+  // Hàm chọn ảnh từ thư viện
+  const pickImage = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert("Lỗi", "Bạn cần cấp quyền truy cập thư viện ảnh!");
+      return;
+    }
 
-const FeaturedProviders = () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+    }
+  };
+
+  // Hàm chụp ảnh từ camera
+  const takePhoto = async () => {
+    let permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert("Lỗi", "Bạn cần cấp quyền sử dụng camera!");
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+    }
+  };
+
   return (
-    <View style={{ padding: 10 }}>
-      <Title style={{ fontSize: 18, fontWeight: 'bold' }}>NHÀ CUNG CẤP NỔI BẬT</Title>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} pagingEnabled>
-        {providers.map((provider) => (
-          <View key={provider.id} style={{ width, alignItems: 'center' }}>
-            <Card style={{ width: width * 0.8, marginHorizontal: 10 }}>
-              <Card.Cover source={{ uri: provider.image }} />
-              <Card.Content>
-                <Title>{provider.title}</Title>
-                <Paragraph>{provider.description}</Paragraph>
-              </Card.Content>
-            </Card>
-          </View>
-        ))}
-      </ScrollView>
+    <View style={{ alignItems: "center", marginTop: 20 }}>
+      {selectedImage && (
+        <Image
+          source={{ uri: selectedImage }}
+          style={{ width: 200, height: 200, marginBottom: 10, borderRadius: 10 }}
+        />
+      )}
+      <Button title="Chọn ảnh từ thư viện" onPress={pickImage} />
+      <Button title="Chụp ảnh mới" onPress={takePhoto} />
     </View>
   );
 };
 
-export default FeaturedProviders;
+export default ImageUploader;

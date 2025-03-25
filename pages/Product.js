@@ -1,9 +1,11 @@
 import React from "react";
-import { View, ScrollView, StyleSheet, Text} from "react-native";
+import { View, ScrollView, StyleSheet, Text } from "react-native";
 import { Appbar, Searchbar, Card, Title, Paragraph, } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import CategoryChip from "./components/category";
 import CardImage from "./components/card";
+
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 
 const Product = () => {
@@ -56,62 +58,65 @@ const Product = () => {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.container}>
-            <Appbar.Header>
-                <Appbar.Content title="HNT" titleStyle={{ fontSize: 28, fontWeight: "bold", color: "#e91e63" }} />
-                <Appbar.Action icon="bell-outline" onPress={() => { }} />
-                <Appbar.Action icon="message-outline" onPress={() => { }} />
-                <Appbar.Action icon="cart-outline" onPress={() => { navigation.navigate("GioHang") }} />
-            </Appbar.Header>
+        <SafeAreaProvider>
+            <View style={styles.container}>
+                <Appbar.Header>
+                    <Appbar.Content title="HNT" titleStyle={{ fontSize: 28, fontWeight: "bold", color: "#e91e63" }} />
+                    <Appbar.Action icon="bell-outline" onPress={() => { }} />
+                    <Appbar.Action icon="message-outline" onPress={() => { }} />
+                    <Appbar.Action icon="cart-outline" onPress={() => { navigation.navigate("GioHang") }} />
+                </Appbar.Header>
 
-            <ScrollView style={{ paddingHorizontal: 16 }}>
+                <ScrollView style={{ paddingHorizontal: 16 }}>
 
-                <Searchbar
-                    placeholder="Xe đạp ..."
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    style={{ marginTop: 10, borderRadius: 10 }}
-                />
-
-
-                <CategoryChip onPress={(category) => console.log(`Thống kê: ${category.name}`)} />
-
-                <Card style={{ padding: 10 }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>NHÀ CUNG CẤP NỔI BẬT</Text>
-                    <CardImage
-                        providers={[
-                            { id: 1, image: "https://via.placeholder.com/300" },
-                            { id: 2, image: "https://via.placeholder.com/301" },
-                            { id: 3, image: "https://via.placeholder.com/301" },
-
-                        ]}
+                    <Searchbar
+                        placeholder="Xe đạp ..."
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        style={{ marginTop: 10, borderRadius: 10 }}
                     />
-                </Card>
-
-                <Title style={{ fontSize: 18, fontWeight: 'bold' }}>SẢN PHẨM NỔI BẬT</Title>
-
-                <Card style={styles.card}>
-
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} pagingEnabled>
-
-                        {products.map((product) => (
-                            <View key={product.id} style={{ width: 170, marginRight: 10 }}>
 
 
-                                <Card.Cover source={{ uri: product.image }} style={{ width: 170, marginRight: 10 }} />
-                                <Card.Content>
-                                    <Title style={{ fontSize: 12 }}>{product.title}</Title>
-                                    <Paragraph style={{ fontWeight: 'bold', color: 'red' }}>Giá từ: {product.price}</Paragraph>
-                                </Card.Content>
+                    <CategoryChip onPress={(category) => console.log(`Thống kê: ${category.name}`)} />
 
-                            </View>
-                        ))}
-                    </ScrollView>
-                </Card>
+                    <Card style={{ padding: 10 }}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>NHÀ CUNG CẤP NỔI BẬT</Text>
+                        <CardImage
+                            providers={[
+                                { id: 1, image: "https://via.placeholder.com/300" },
+                                { id: 2, image: "https://via.placeholder.com/301" },
+                                { id: 3, image: "https://via.placeholder.com/301" },
+
+                            ]}
+                        />
+                    </Card>
+
+                    <Title style={{ fontSize: 18, fontWeight: 'bold' }}>SẢN PHẨM NỔI BẬT</Title>
+
+                    <Card style={styles.card}>
+
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} pagingEnabled>
+
+                            {products.map((product) => (
+                                <View key={product.id} style={{ width: 170, marginRight: 10 }}>
 
 
-            </ScrollView>
-        </View>
+                                    <Card.Cover source={{ uri: product.image }} style={{ width: 170, marginRight: 10 }} />
+                                    <Card.Content>
+                                        <Title style={{ fontSize: 12 }}>{product.title}</Title>
+                                        <Paragraph style={{ fontWeight: 'bold', color: 'red' }}>Giá từ: {product.price}</Paragraph>
+                                    </Card.Content>
+
+                                </View>
+                            ))}
+                        </ScrollView>
+                    </Card>
+
+
+                </ScrollView>
+            
+            </View>
+        </SafeAreaProvider>
     );
 };
 const styles = StyleSheet.create({

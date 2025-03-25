@@ -1,10 +1,11 @@
 
 
+
 import { Text } from "react-native"
 
-const KhuyenMai = () => {
+const ThongKeCuaHang = () => {
     return <Text> Trang thưởng</Text>
 
 }
 
-export default KhuyenMai;
+export default ThongKeCuaHang;

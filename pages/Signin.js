@@ -16,14 +16,12 @@ const SignIn = () => {
     const dispatch = useDispatch();
     const { user, loading, error } = useSelector((state) => state.user);
     const handleLogin = () => {
-
         dispatch(loginUser({ username, password }));
-        console.log(user);
     };
     const navigation = useNavigation();
     useEffect(() => {
         if (user) {
-            navigation.replace("TaiKhoan"); // Thay "Home" bằng tên màn hình bạn muốn chuyển đến
+            navigation.navigate("SanPham"); 
         }
     }, [user]);
 
@@ -40,7 +38,7 @@ const SignIn = () => {
                         <TextInput label="Tên Tài khoản" value={username} onChangeText={SetUsername} mode="outlined" />
                         <TextInput label="Mật Khẩu" value={password} onChangeText={setPassword} mode="outlined" />
 
-                        {error && <Text style={styles.error}>{error.username?.[0] || "Đăng nhập thất bại!"}</Text>}
+                        {error && <Text style={{ color: "red"}}>Tên tài khoản hoặc mật khẩu không chính xác!</Text>}
 
                         <Button mode="contained" style={styles.button} onPress={handleLogin} loading={loading}>
                             {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
