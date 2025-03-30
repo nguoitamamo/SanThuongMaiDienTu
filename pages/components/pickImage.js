@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 const UploadImage = () => {
     const dispatch = useDispatch();
     const [newImage, setNewImage] = useState({id: 0,  nameImage: "", imageReal: "" });
-    const providers = useSelector((state) => state.images.providers);
+    const ImageProduct = useSelector((state) => state.images.ImageProduct);
 
 
     useEffect(() => {
@@ -28,9 +28,9 @@ const UploadImage = () => {
         if (!result.canceled) {
             const imageUri = result.assets[0].uri;
             setNewImage({
-                id : providers.length + 1,
+                id : ImageProduct.length + 1,
                 nameImage: imageUri.split("/").pop(),
-                imageReal: imageUri,
+                avatar: imageUri,
             });
             
         }

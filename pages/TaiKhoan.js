@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Appbar, Avatar, Card, List, Divider } from 'react-native-paper';
-import { StyleSheet, Text, View } from 'react-native';
+import { Appbar, Avatar, Card, List, Divider, Button, Modal, Portal, PaperProvider } from 'react-native-paper';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';  // Thêm useNavigation
@@ -8,6 +8,8 @@ import SignUp from './SignUp';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchPermissions } from '../redux/permission';
+import { logoutUser } from '../redux/userSlice';
+
 
 const menuItems = [
     { id: '1', name: 'Ưu đãi của bạn', icon: 'ticket-percent', codename: "UuDaiCuaBan" },
@@ -24,16 +26,29 @@ const TaiKhoan = () => {
     const dispatch = useDispatch();
     const { data: permissions, loading, error } = useSelector((state) => state.permissions);
 
+    
     useEffect(() => {
         if (user?.id) {
             dispatch(fetchPermissions(user.id)); // Gọi action để lấy quyền
         }
     }, [user, dispatch]);
 
+
+    const [visible, setVisible] = React.useState(false);
+
+    const showModal = () => setVisible(true);
+    const hideModal = () => setVisible(false);
+    const containerStyle = { backgroundColor: 'white', padding: 20 };
+    const Logout_User = () => {
+
+        dispatch(logoutUser());
+    }
+    
+
     return (
         <SafeAreaProvider>
             <View style={styles.container}>
-                {/* Header */}
+
                 <Appbar.Header style={{ backgroundColor: "white", elevation: 0 }}>
                     <Appbar.Content
                         title="Tài khoản"
@@ -44,7 +59,6 @@ const TaiKhoan = () => {
                     <Appbar.Action icon="cog-outline" onPress={() => navigation.navigate("ThongTinCaNhan")} />
                 </Appbar.Header>
 
-                {/* User Info */}
                 <View style={{ height: 100 }}>
                     <Card style={styles.body}>
                         <Card.Content>
@@ -56,9 +70,40 @@ const TaiKhoan = () => {
                     </Card>
                 </View>
 
-                {/* Menu */}
-                <View>
+                <PaperProvider>
                     <Card style={styles.card}>
+
+                        <Portal>
+                            <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+
+                                    <Text>
+                                        Bạn chắc chắn muốn đăng xuất?
+                                    </Text>
+                                    <View style={{ flexDirection: "row", justifyContent: "flex-end", marginHorizontal: 30, }}>
+                                        <Button>Hủy</Button>
+                                        <Button onPress= {Logout_User}>Đăng xuất</Button>
+
+                                    </View>
+                         
+                            </Modal>
+                        </Portal>
+
+                        <View>
+                            <List.Item
+                                title="Đăng xuất"
+                                left={() => (
+                                    <MaterialCommunityIcons name="ticket-percent" size={24} color="#d81b60" />
+                                )}
+                                right={() => (
+                                    <MaterialCommunityIcons name="chevron-right" size={24} color="#999" />
+                                )}
+                                onPress={showModal}
+                                titleStyle={styles.title}
+                            />
+                            <Divider />
+                        </View>
+
+
                         {Array.isArray(permissions) && permissions.length > 0 ? (
                             permissions.map((item, index) => (
                                 <View key={item.id}>
@@ -81,11 +126,9 @@ const TaiKhoan = () => {
                         )}
 
                     </Card>
-                </View>
+                </PaperProvider>
 
             </View>
-
-            {/* <MainStack /> */}
 
         </SafeAreaProvider>
     );

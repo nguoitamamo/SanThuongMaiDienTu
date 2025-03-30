@@ -8,6 +8,7 @@ import CardImage from "../../components/card";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { removeImage } from "../../../redux/imageSlice"
+import API, { endpoints } from "../../../Networking/API";
 
 const QuanLiSanPham = ({ route }) => {
 
@@ -16,14 +17,25 @@ const QuanLiSanPham = ({ route }) => {
         setDanhMuc, items, setItems } = route.params || {};
 
     const dispatch = useDispatch()
-    
-    useEffect( ()=> {
+
+    useEffect(() => {
         dispatch(removeImage())
-    } , [])
+    }, [])
 
-    
-    
 
+    const fetchRate = async () => {
+        try {
+            const userId = 23;
+            const numberRate = '5.0';
+
+            const res = await API.get( endpoints.users + userId + '/add_rate/?number_rate=' +  numberRate);
+            console.log("API Response:", res.data);
+        } catch (error) {
+            console.error("Lỗi khi gọi API:", error);
+        }
+    }
+
+    const ImageProduct = useSelector((state) => state.images.ImageProduct);
     return (
 
         <View style={{ flex: 1, paddingHorizontal: 16 }}>
@@ -39,7 +51,7 @@ const QuanLiSanPham = ({ route }) => {
                         mode="outlined"
                     />
 
-                    <Button mode="contained" style={[styles.button, { height: 50, marginTop: 7 }]} onPress={() => { }}>
+                    <Button mode="contained" style={[styles.button, { height: 50, marginTop: 7 }]} onPress={fetchRate}>
                         Tạo
                     </Button>
                 </View>
@@ -51,7 +63,7 @@ const QuanLiSanPham = ({ route }) => {
                     <View>
                         <UploadImage />
                     </View>
-                    <CardImage />
+                    <CardImage providers = { ImageProduct} />
 
                     <View style={{ gap: 12, zIndex: 1000 }}>
                         <DropDownPicker

@@ -4,11 +4,9 @@ import API, {endpoints} from "../Networking/API";
 
 
 export const fetchPermissions = createAsyncThunk("permissions/FetchPermissions",
-    async (user_id, { rejectWithValue }) => {
+    async (user_id) => {
         try {
-            console.log(user_id);
             const res = await API.get(endpoints.users + user_id  + "/permissions/", {});
-            console.log("Dữ liệu quyền nhận được:", res.data);
             return res.data.permissions || [];
         } catch (error) {
             console.error("Lỗi khi tải quyền:", error);

@@ -1,16 +1,59 @@
-import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Appbar, Button, Card, Avatar } from "react-native-paper";
+import { Appbar, Button, Card, Avatar, TextInput } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import DropDownPicker from "react-native-dropdown-picker";
+import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from '@react-navigation/native';
-
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import * as FileSystem from "expo-file-system";
 
 
 const SignUp = () => {
+    const [last_name, setlast_name] = useState('');
+    const [first_name, setfirst_name] = useState('');
+    const [email, setEmail] = useState('@gmail.com');
+    const [username, setusername] = useState('');
+    const [password, setpassword] = useState('');
+    const [address, setaddress] = useState('');
+    const [open, setOpen] = useState(false);
+    const [role, setrole] = useState(null);
+    const [items, setItems] = useState([
+        { label: "Cá nhân", value: "1" },
+        { label: "Tiểu thương hoặc danh nghiệp", value: "2" }
+    ]);
+    const [newImage, setNewImage] = useState({ id: 0, nameImage: "", avatar: "" });
 
     const navigation = useNavigation();
+
+    const pickImage = async () => {
+        console.log("Đã vào đây");
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+
+            const imageUri = result.assets[0].uri;
+            setNewImage({
+                id: 1,
+                avatar: base64Image,
+                image: imageUri,
+            });
+
+        }
+    };
+
+
+    useEffect(() => {
+        console.log(newImage);
+    }, [newImage])
+
     return (
         <SafeAreaProvider>
             <View style={styles.container}>
@@ -20,11 +63,38 @@ const SignUp = () => {
                 </Appbar.Header>
 
 
-                <Card style={styles.card}>
-                    <Card.Content>
-                        <Text style={styles.brand}>HNT</Text>
 
-                        
+                <View style={styles.avatarContainer}>
+                    <Avatar.Image size={100} source={{ uri: newImage.image || 'https://res.cloudinary.com/dxw8gtpd8/image/upload/v1742716253/bj1op6ixbnhez9vycham.jpg' }} />
+                    <TouchableOpacity onPress={pickImage}>
+                        <Text style={styles.changeAvatar}>Thay đổi hình đại diện</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <DropDownPicker
+                    open={open}
+                    value={role}
+                    items={items}
+                    setOpen={setOpen}
+                    setValue={setrole}
+                    setItems={setItems}
+                    placeholder="Chọn phương thức..."
+                />
+                <KeyboardAwareScrollView
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <ScrollView>
+                        <View style={{ gap: 12 }}>
+                            <TextInput label="Họ" value={last_name} onChangeText={setlast_name} mode="outlined" />
+                            <TextInput label="Tên" value={first_name} onChangeText={setfirst_name} mode="outlined" />
+                            <TextInput label="Tên tài khoản" value={username} onChangeText={setusername} mode="outlined" />
+                            <TextInput label="Mật khẩu" value={password} onChangeText={setpassword} mode="outlined" />
+                            <TextInput label="Email" value={email} onChangeText={setEmail} mode="outlined" />
+                            <TextInput label="Thành phố/Tỉnh" value={address} onChangeText={setaddress} mode="outlined" />
+                        </View>
+
+
 
 
                         <Text style={styles.registerText}>Đăng ký tài khoản với</Text>
@@ -52,18 +122,11 @@ const SignUp = () => {
 
 
 
-                    </Card.Content>
-                </Card>
-
-                {/* Nút Trung tâm trợ giúp */}
-                <Card style={styles.helpCard}>
-                    <Card.Content>
-                        <View style={styles.helpRow}>
-                            <MaterialCommunityIcons name="chat-question-outline" size={24} color="white" />
-                            <Text style={styles.helpText}>Trung tâm trợ giúp</Text>
-                        </View>
-                    </Card.Content>
-                </Card>
+                        <Button mode="contained" style={styles.button} onPress={() => { }}>
+                            Đăng Ký
+                        </Button>
+                    </ScrollView>
+                </KeyboardAwareScrollView>
             </View>
         </SafeAreaProvider >
     );
@@ -155,6 +218,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "white",
         fontWeight: "bold",
+    },
+    avatarContainer: {
+        alignItems: 'center',
+        marginVertical: 20,
+    },
+    button: {
+        marginTop: 20,
+        backgroundColor: '#d81b60',
+        paddingVertical: 8,
+        borderRadius: 5,
     },
 });
 

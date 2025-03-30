@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/userSlice";
 
 
-
 const SignIn = () => {
     const [username, SetUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -21,7 +20,8 @@ const SignIn = () => {
     const navigation = useNavigation();
     useEffect(() => {
         if (user) {
-            navigation.navigate("SanPham"); 
+            navigation.navigate("App");
+            // <App/> 
         }
     }, [user]);
 

@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
+import { MaterialIcons } from "@expo/vector-icons";
 
 // Import các màn hình
 import Product from "../pages/Product";
@@ -20,6 +21,9 @@ import UuDaiCuaBan from "../pages/taikhoanComponent/KhachHang/UuDaiCuaBan";
 import ThongKeCuaHang from "../pages/taikhoanComponent/CuaHang/ThongKeCuaHang";
 import KhuyenMai from "../pages/taikhoanComponent/CuaHang/KhuyenMai";
 import QuanLiCuaHang from "../pages/taikhoanComponent/CuaHang/QuanLiCuaHang";
+import ChiTietSanPham from "../pages/ChiTietSanPham";
+import Allcomment from "../pages/Allcomment";
+import App from "../App";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -85,8 +89,44 @@ const MainStack = () => (
     <Stack.Screen name="UuDaiCuaBan" component={UuDaiCuaBan} options={{ headerShown: true, title: "Ưu đãi của bạn" }} />
     <Stack.Screen name="TaiKhoan" component={TaiKhoan} />
     <Stack.Screen name="ThongKeCuaHang" component={ThongKeCuaHang} options={{ headerShown: true, title: "Thống kê cửa hàng" }} />
-    <Stack.Screen name= "KhuyenMai" component={KhuyenMai} options={{ headerShown: true, title: "Thiết lập khuyến mãi" }} />
-    <Stack.Screen name="QuanLiCuaHang" component={QuanLiCuaHang}   options={{ headerShown: true, title: "Quản lí cửa hàng" }} />
+    <Stack.Screen name="KhuyenMai" component={KhuyenMai} options={{ headerShown: true, title: "Thiết lập khuyến mãi" }} />
+    <Stack.Screen name="QuanLiCuaHang" component={QuanLiCuaHang} options={{ headerShown: true, title: "Quản lí cửa hàng" }} />
+    <Stack.Screen name="ChiTietSanPham" component={ChiTietSanPham}
+
+      options={({ navigation }) => ({
+        headerShown: true,
+        title: "Chi Tiết Sản Phẩm",
+        headerRight: () => (
+          <MaterialIcons
+            name="shopping-cart"
+            size={24}
+            color="black"
+            style={{ marginRight: 15 }}
+            onPress={() => navigation.navigate("GioHang")}
+          />
+        ),
+      })}
+    />
+
+
+    <Stack.Screen
+      name="Allcomment"
+      component={Allcomment}
+      options={({ navigation }) => ({
+        headerShown: true,
+        title: "Đánh giá",
+        headerRight: () => (
+          <MaterialIcons
+            name="shopping-cart"
+            size={24}
+            color="black"
+            style={{ marginRight: 15 }}
+            onPress={() => navigation.navigate("GioHang")}
+          />
+        ),
+      })}
+    />
+    <Stack.Screen name = "App" component={MainStack} />
   </Stack.Navigator>
 );
 

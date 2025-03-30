@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    providers: [],
+    ImageProduct: [],
 };
 
 const imageSlice = createSlice({
@@ -9,10 +9,10 @@ const imageSlice = createSlice({
     initialState,
     reducers: {
         addImage: (state, action) => {
-            state.providers.push(action.payload);
+            state.ImageProduct.push(action.payload);
         },
         removeImage: (state, action) => {
-            state.providers = [];
+            state.ImageProduct = [];
         }
     },
 });
