@@ -1,10 +1,12 @@
+import { memo } from "react";
 import { Card } from "react-native-paper";
 import { ScrollView, View } from "react-native";
 
 
 
-const CardImage = ( { providers }) => { 
+const CardImage = memo(( { providers }) => { 
 
+    console.log( " Đay: " +  providers);
 
     return (
         <View>
@@ -19,7 +21,7 @@ const CardImage = ( { providers }) => {
            
         </View>
     );
-};
+});
 
 
 export default CardImage;

@@ -28,6 +28,16 @@ export const getToken = async (username, password) => {
 
 
 
+export const SupplierInfo = async (id) => {
+  try {
+    let res = await API.get(endpoints.suppliers + id + "/info_short/");
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi khi gọi API111:", error);
+  }
+};
+
+
 
 
 export const loginUser = createAsyncThunk("users/login", async ({ username, password }, { rejectWithValue }) => {
@@ -44,9 +54,15 @@ export const loginUser = createAsyncThunk("users/login", async ({ username, pass
     });
 
     const token = await getToken(username, password);
+    let supplier = null;
+
+    if (res.data.role === "Supplier") {
+
+      supplier = await SupplierInfo(res.data.id);
+    }
 
 
-    return { user: res.data, token };
+    return { user: res.data, token, supplier };
   } catch (error) {
     return rejectWithValue(error.response?.data || "Lỗi không xác định");
   }
@@ -56,14 +72,14 @@ export const loginUser = createAsyncThunk("users/login", async ({ username, pass
 
 
 
-export const logoutUser = createAsyncThunk("users/logout", async ( _, { getState, rejectWithValue }) => {
+export const logoutUser = createAsyncThunk("users/logout", async (_, { getState, rejectWithValue }) => {
   const token = getState().user.token;
   console.log(token);
 
   const formData = new FormData();
   formData.append("token", token);
 
-  
+
   try {
     await API.post(endpoints.users + "logout/", formData, {
       headers: {
@@ -79,18 +95,40 @@ export const logoutUser = createAsyncThunk("users/logout", async ( _, { getState
   }
 });
 
+export const LoadCategorySupplier = createAsyncThunk(
+  "category/Category",
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState();
+    const id = state.user.user.id;
+    const token = state.user.token;
+
+    try {
+
+      let res = await API.get(endpoints.suppliers + id + "/get_category/", {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response ? error.response.data : error.message);
+    }
+  }
+);
+
 
 
 
 
 const userSlice = createSlice({
   name: "user",
-  initialState: { user: null, loading: false, error: null, token: null },
+  initialState: { user: null, loading: false, error: null, token: null, supplier: null, category: null },
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
+        state.supplier = action.payload.supplier;
         state.loading = false;
 
         console.log("ID user" + state.user.id);
@@ -107,9 +145,13 @@ const userSlice = createSlice({
         state.loading = false;
       })
 
-      .addCase(logoutUser.fulfilled , (state, action) => {
+      .addCase(logoutUser.fulfilled, (state, action) => {
         state.user = null;
         state.token = null;
+        state.loading = false;
+      })
+      .addCase(LoadCategorySupplier.fulfilled, (state, action) => {
+        state.category = action.payload;
         state.loading = false;
       })
   },

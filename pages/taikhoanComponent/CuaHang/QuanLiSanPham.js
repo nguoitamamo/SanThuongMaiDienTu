@@ -1,150 +1,184 @@
 import { View } from "react-native";
 import { ScrollView, StyleSheet } from "react-native";
-import { TextInput, Button, Card } from "react-native-paper";
+import { TextInput, Button, Card, Avatar, Text } from "react-native-paper";
 import CategoryChip from "../../components/category";
 import DropDownPicker from "react-native-dropdown-picker";
 import UploadImage from "../../components/pickImage";
 import CardImage from "../../components/card";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useActionState, useEffect } from "react";
 import { removeImage } from "../../../redux/imageSlice"
 import API, { endpoints } from "../../../Networking/API";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { KeyboardAvoidingView, Platform } from "react-native";
+import { useState } from "react";
+import InfoSupplier from "../../components/supplier";
+import { LoadCategorySupplier } from "../../../redux/userSlice";
 
-const QuanLiSanPham = ({ route }) => {
+const QuanLiSanPham = () => {
 
-    const { CategoryInput, SetCategoryInput, ProductName, setProductName, UnitPrice, setUnitPrice,
-        NumberInStore, setNumberInStore, Description, setDescription, open, setOpen, DanhMuc,
-        setDanhMuc, items, setItems } = route.params || {};
+    const [CategoryInput, SetCategoryInput] = useState('');
+    const [ProductName, setProductName] = useState('');
+    const [UnitPrice, setUnitPrice] = useState('');
+    const [NumberInStore, setNumberInStore] = useState(0);
+    const [Description, setDescription] = useState('');
+
+
+    const [open, setOpen] = useState(false);
+    const [DanhMuc, setDanhMuc] = useState(null);
+    const [items, setItems] = useState([]);
+
+    const ImageProduct = useSelector((state) => state.images.ImageProduct);
+    const userid = useSelector((state) => state.user.user.id);
+    const token = useSelector((state) => state.user.token);
+    const info = useSelector((state) => state.user.supplier);
+    const category = useSelector((state) => state.user.category);
+
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(removeImage())
-    }, [])
+        dispatch(removeImage());
+        dispatch(LoadCategorySupplier());
+    }, [dispatch]);
 
+    useEffect(() => {
 
-    const fetchRate = async () => {
-        try {
-            const userId = 23;
-            const numberRate = '5.0';
-
-            const res = await API.get( endpoints.users + userId + '/add_rate/?number_rate=' +  numberRate);
-            console.log("API Response:", res.data);
-        } catch (error) {
-            console.error("Lỗi khi gọi API:", error);
+        if (Array.isArray(category) && category.length > 0) {
+            let newItems = category.map((cate) => ({
+                label: cate.CategoryName,
+                value: cate.CategoryID,
+            }));
+            setItems(newItems); 
         }
+
+    }, [category]);
+
+    const AddStore = async () => {
+
+        console.log("Danh mục: " + DanhMuc);
+
+        try {
+
+            let formData = new FormData();
+
+
+            ImageProduct.forEach((image) => {
+                formData.append("list_image", {
+                    uri: image.avatar,
+                    name: image.nameImage,
+                    type: image.type || "image/jpeg",
+                });
+            });
+            formData.append("ProductName", ProductName);
+            formData.append("UnitPrice", UnitPrice);
+            formData.append("NumberInStore", NumberInStore);
+            formData.append("Description", Description);
+
+            console.log(formData);
+
+            await API.post(endpoints.users + userid + "/add_store/?category_id=" + DanhMuc, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                }
+            })
+
+            setProductName();
+            setUnitPrice();
+            setNumberInStore();
+            setDescription();
+            Alert("Thêm đơn hàng thành công");
+        }
+        catch (error) {
+            console.log(error);
+        }
+
     }
 
-    const ImageProduct = useSelector((state) => state.images.ImageProduct);
     return (
 
-        <View style={{ flex: 1, paddingHorizontal: 16 }}>
+        <View style={styles.container}>
+
+            <InfoSupplier info={info} />
+
+            <View style={{
+                flexDirection: "row", alignItems: "stretch", gap: 8, marginLeft: 10,
+                marginRight: 10
+            }}>
+                <TextInput
+                    style={[styles.TextInput, { height: 50 }]}
+                    label="Tên danh mục"
+                    value={CategoryInput}
+                    onChangeText={SetCategoryInput}
+                    mode="outlined"
+                />
+
+                <Button mode="contained" style={[styles.button, { height: 50, marginTop: 7 }]}>
+                    Tạo
+                </Button>
+            </View>
+            <View style={styles.base}>
+                <CategoryChip categories = {category}/>
+            </View>
+            <Button mode="contained" style={{
+                backgroundColor: '#d81b60', borderRadius: 5, marginBottom: 12, marginLeft: 10,
+                marginRight: 10,
+            }} onPress={AddStore}>Thêm
+            </Button>
+            <View style={styles.base}>
+                <DropDownPicker
+                    open={open}
+                    value={DanhMuc}
+                    items={items}
+                    setOpen={setOpen}
+                    setValue={setDanhMuc}
+                    placeholder="Chọn một danh mục..."
+                />
+            </View>
+
             <ScrollView>
 
-
-                <View style={{ flexDirection: "row", alignItems: "stretch", gap: 8 }}>
-                    <TextInput
-                        style={[styles.TextInput, { height: 50 }]}
-                        label="Tên danh mục"
-                        value={CategoryInput}
-                        onChangeText={SetCategoryInput}
-                        mode="outlined"
-                    />
-
-                    <Button mode="contained" style={[styles.button, { height: 50, marginTop: 7 }]} onPress={fetchRate}>
-                        Tạo
-                    </Button>
-                </View>
-                <View>
-                    <CategoryChip onPress={(category) => console.log(`Thống kê: ${category.name}`)} />
+                <View style={styles.base}>
+                    <UploadImage />
+                    <CardImage providers={ImageProduct} />
                 </View>
 
-                <Card style={{ padding: 10, backgroundColor: '#fff' }}>
-                    <View>
-                        <UploadImage />
-                    </View>
-                    <CardImage providers = { ImageProduct} />
 
-                    <View style={{ gap: 12, zIndex: 1000 }}>
-                        <DropDownPicker
-                            open={open}
-                            value={DanhMuc}
-                            items={items}
-                            setOpen={setOpen}
-                            setValue={setDanhMuc}
-                            setItems={setItems}
-                            placeholder="Chọn một danh mục..."
-                        />
+                <Card style={{
+                    padding: 10, marginLeft: 10,
+                    marginRight: 10,
+                    marginBottom: 20
+                }}>
 
-                        <TextInput label="Tên sản phẩm" value={ProductName} onChangeText={setProductName} mode="outlined" />
-                        <TextInput label="Giá" value={UnitPrice} onChangeText={setUnitPrice} mode="outlined" keyboardType="numeric" />
-                        <TextInput label="Số lượng" value={NumberInStore} onChangeText={setNumberInStore} mode="outlined" keyboardType="numeric" />
-                        <TextInput label="Mô tả" value={Description} onChangeText={setDescription} mode="outlined" />
-                    </View>
+
+
+
+                    <KeyboardAwareScrollView
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <View style={{ gap: 12, marginBottom: 20, marginTop: 10 }}>
+                            <TextInput label="Tên sản phẩm" value={ProductName} onChangeText={setProductName} mode="outlined" />
+                            <TextInput label="Giá" value={UnitPrice} onChangeText={setUnitPrice} mode="outlined" keyboardType="numeric" />
+                            <TextInput label="Số lượng" value={NumberInStore} onChangeText={setNumberInStore} mode="outlined" keyboardType="numeric" />
+                            <TextInput label="Mô tả" value={Description} onChangeText={setDescription} mode="outlined" />
+                        </View>
+                    </KeyboardAwareScrollView>
+
+
+
+
+
+
+
                 </Card>
 
-
-
-                <Button mode="contained" style={{ backgroundColor: '#d81b60', borderRadius: 5 }} >Thêm</Button>
             </ScrollView>
-        </View>
-        // <View style={styles.container}>
-        //     <ScrollView style={{ paddingHorizontal: 16 }}>
-        //         {/* Nhập danh mục */}
-        //         <View style={styles.row}>
-        //             <TextInput
-        //                 style={[styles.TextInput, { height: 50 }]}
-        //                 label="Tên danh mục"
-        //                 value={Category}
-        //                 onChangeText={SetCategory}
-        //                 mode="outlined"
-        //             />
-        //             <Button mode="contained" style={styles.button} onPress={() => { }}>
-        //                 Tạo
-        //             </Button>
-        //         </View>
 
-        //         {/* Upload hình ảnh */}
-        //         <Card style={styles.card}>
-        //             <UploadImage providers={providers} setProviders={setProviders} />
-        //             <CardImage providers={providers} />
 
-        //             {/* Chọn danh mục */}
-        //             <DropDownPicker
-        //                 open={open}
-        //                 value={value}
-        //                 items={items}
-        //                 setOpen={setOpen}
-        //                 setValue={setValue}
-        //                 setItems={setItems}
-        //                 placeholder="Chọn một danh mục..."
-        //                 style={{ marginBottom: 10 }}
-        //             />
 
-        //             {/* Nhập thông tin sản phẩm */}
-        //             <TextInput label="Tên sản phẩm" value={ProductName} onChangeText={setProductName} mode="outlined" />
-        //             <TextInput label="Giá" value={UnitPrice} onChangeText={setUnitPrice} mode="outlined" keyboardType="numeric" />
-        //             <TextInput label="Số lượng" value={NumberInStore} onChangeText={setNumberInStore} mode="outlined" keyboardType="numeric" />
-        //             <TextInput label="Mô tả" value={Description} onChangeText={setDescription} mode="outlined" />
-        //         </Card>
-
-        //         {/* Nút thêm sản phẩm */}
-        //         <Button mode="contained" style={styles.addButton} onPress={handleAddProduct}>
-        //             Thêm sản phẩm
-        //         </Button>
-
-        //         {/* Hiển thị danh sách sản phẩm */}
-        //         <Text style={styles.title}>Danh sách sản phẩm</Text>
-        //         {products.map((product, index) => (
-        //             <Card key={index} style={styles.card}>
-        //                 <Text>Tên: {product.ProductName}</Text>
-        //                 <Text>Giá: {product.UnitPrice}</Text>
-        //                 <Text>Số lượng: {product.NumberInStore}</Text>
-        //                 <Text>Mô tả: {product.Description}</Text>
-        //             </Card>
-        //         ))}
-        //     </ScrollView>
-        // </View>
+        </View >
 
 
     );
@@ -154,15 +188,10 @@ const QuanLiSanPham = ({ route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // paddingHorizontal: 16,
-        marginTop: 16
-        // paddingVertical: 10
-        // }, button: {
-        //     marginTop: 20,
-        //     marginBottom: 20,
-        //     backgroundColor: '#d81b60',
-        //     paddingVertical: 8,
-        //     borderRadius: 5,
+
+        marginTop: 16,
+        // paddingHorizontal: 16
+
     },
     button: {
         backgroundColor: '#d81b60',
@@ -172,6 +201,20 @@ const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 5,
     },
+    body:
+    {
+        flexDirection: "row",
+        alignItems: 'center',
+        justifyContent: 'center',
+        // margin: 10
+    },
+    row: { flexDirection: 'row', alignItems: 'center' },
+    text: { marginLeft: 10, fontWeight: 'bold', fontSize: 22 },
+    base: {
+        marginLeft: 10,
+        marginRight: 10,
+        // marginBottom: 10,
+    }
 
 });
 

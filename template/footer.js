@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Badge } from "react-native-paper";
+import { View } from "react-native";
 
 // Import các màn hình
 import Product from "../pages/Product";
@@ -24,6 +26,7 @@ import QuanLiCuaHang from "../pages/taikhoanComponent/CuaHang/QuanLiCuaHang";
 import ChiTietSanPham from "../pages/ChiTietSanPham";
 import Allcomment from "../pages/Allcomment";
 import App from "../App";
+import ThanhToan from "../pages/ThanhToan";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -75,6 +78,37 @@ const TabNavigator = () => {
 };
 
 
+const CartIconWithBadge = ({ navigation }) => {
+  const products = useSelector(state => state.cart.products);
+  const totalQuantity = products.reduce((sum, item) => sum + item.quantity, 0);
+
+  return (
+    <View style={{ position: "relative", marginRight: 15 }}>
+      <MaterialIcons
+        name="shopping-cart"
+        size={28}
+        color="black"
+        onPress={() => navigation.navigate("GioHang")}
+      />
+      {totalQuantity > 0 && (
+        <Badge
+          style={{
+            position: "absolute",
+            top: -14,
+            right: -8,
+            backgroundColor: "red",
+            color: "white",
+            fontSize: 12
+          }}
+          size={20}
+        >
+          {totalQuantity}
+        </Badge>
+      )}
+    </View>
+  );
+};
+
 const MainStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Main" component={TabNavigator} />
@@ -82,7 +116,7 @@ const MainStack = () => (
     <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: true, title: "Đăng Nhập" }} />
     <Stack.Screen name="SignUp" component={SignUp} />
     <Stack.Screen name="SanPham" component={Product} />
-    <Stack.Screen name="GioHang" component={GioHang} options={{ headerShown: true, title: "Giỏ Hàng" }} />
+    <Stack.Screen name="GioHang" component={GioHang} options={{ headerShown: true, title: "Giỏ hàng" }} />
     <Stack.Screen name="XacNhanDangKiBanHangChoKhachHang" component={XacNhanDangKiBanHangChoKhachHang} options={{ headerShown: true, title: "Danh sách khách hàng đăng kí bán hàng" }} />
     <Stack.Screen name="QuanLiSanPham" component={QuanLiSanPham} options={{ headerShown: true, title: "Quản lí sản phẩm" }} />
     <Stack.Screen name="CapNhatMatKhau" component={CapNhatMatKhau} options={{ headerShown: true, title: "Cập nhật mật khẩu" }} />
@@ -96,15 +130,7 @@ const MainStack = () => (
       options={({ navigation }) => ({
         headerShown: true,
         title: "Chi Tiết Sản Phẩm",
-        headerRight: () => (
-          <MaterialIcons
-            name="shopping-cart"
-            size={24}
-            color="black"
-            style={{ marginRight: 15 }}
-            onPress={() => navigation.navigate("GioHang")}
-          />
-        ),
+        headerRight: () => <CartIconWithBadge navigation={navigation} />, // Hiển thị icon có Badge
       })}
     />
 
@@ -126,7 +152,24 @@ const MainStack = () => (
         ),
       })}
     />
-    <Stack.Screen name = "App" component={MainStack} />
+    <Stack.Screen name="App" component={MainStack} />
+    <Stack.Screen
+      name="ThanhToan"
+      component={ThanhToan}
+      options={({ navigation }) => ({
+        headerShown: true,
+        title: "ThanhToan",
+        headerRight: () => (
+          <MaterialIcons
+            name="shopping-cart"
+            size={24}
+            color="black"
+            style={{ marginRight: 15 }}
+            onPress={() => navigation.navigate("GioHang")}
+          />
+        ),
+      })}
+    />
   </Stack.Navigator>
 );
 

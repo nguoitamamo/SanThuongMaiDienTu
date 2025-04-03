@@ -8,6 +8,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as FileSystem from "expo-file-system";
+import API, { endpoints } from "../Networking/API";
 
 
 const SignUp = () => {
@@ -20,10 +21,10 @@ const SignUp = () => {
     const [open, setOpen] = useState(false);
     const [role, setrole] = useState(null);
     const [items, setItems] = useState([
-        { label: "Cá nhân", value: "1" },
-        { label: "Tiểu thương hoặc danh nghiệp", value: "2" }
+        { label: "Cá nhân", value: "0" },
+        { label: "Tiểu thương hoặc danh nghiệp", value: "1" }
     ]);
-    const [newImage, setNewImage] = useState({ id: 0, nameImage: "", avatar: "" });
+    const [newImage, setNewImage] =  useState({ name: "", image: "", type: "" });
 
     const navigation = useNavigation();
 
@@ -37,13 +38,19 @@ const SignUp = () => {
         });
 
         if (!result.canceled) {
-            const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
 
             const imageUri = result.assets[0].uri;
+            let localUri = result.assets[0].uri;
+            let filename = localUri.split('/').pop(); // Lấy tên file
+
+            let match = /\.(\w+)$/.exec(filename);
+            let fileType = match ? `image/${match[1]}` : `image`;
+
+
             setNewImage({
-                id: 1,
-                avatar: base64Image,
+                name: filename,
                 image: imageUri,
+                type: fileType,
             });
 
         }
@@ -52,7 +59,52 @@ const SignUp = () => {
 
     useEffect(() => {
         console.log(newImage);
+        console.log(items[0].label);
     }, [newImage])
+
+
+    const SignUpUser = async () => {
+
+        try {
+
+            let formData = new FormData();
+            formData.append('avatar', {
+                uri: newImage.image,
+                name: newImage.name,
+                type: newImage.type
+            });
+            formData.append("username", username);
+            formData.append("password", password);
+            formData.append("first_name", first_name);
+            formData.append("last_name", last_name);
+            formData.append("email", email);
+            formData.append("address", address);
+            formData.append("role", items[role].label);
+
+            console.log(formData);
+
+            await API.post(endpoints.users + "signup/", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                }
+            })
+
+            setfirst_name();
+            setlast_name();
+            setEmail();
+            setpassword();
+            setusername();
+            setaddress();
+            setrole();
+            return navigation.navigate("SignIn");
+        } 
+        catch(error){
+            console.log(error);
+        }
+
+
+    }
+
 
     return (
         <SafeAreaProvider>
@@ -122,7 +174,7 @@ const SignUp = () => {
 
 
 
-                        <Button mode="contained" style={styles.button} onPress={() => { }}>
+                        <Button mode="contained" style={styles.button} onPress={SignUpUser}>
                             Đăng Ký
                         </Button>
                     </ScrollView>

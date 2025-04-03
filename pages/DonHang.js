@@ -16,22 +16,10 @@ const DonHang = () => {
         <Appbar.Action icon="cog-outline" />
       </Appbar.Header>
 
-      {/* Tabs */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
-          paddingVertical: 10,
-          borderBottomWidth: 2,
-          borderBottomColor: "#E0E0E0",
-        }}
-      >
-        <Text style={{ color: "#888", fontSize: 16 }}>Chờ lấy hàng</Text>
-        <Text style={{ color: "#D81B60", fontSize: 16, fontWeight: "bold" }}>
-          Đang giao hàng
-        </Text>
-        <Text style={{ color: "#888", fontSize: 16 }}>Đã giao & chờ đối soát</Text>
-      </View>
+
+
+    
+
 
       <ScrollView>
         {/* Card hướng dẫn */}

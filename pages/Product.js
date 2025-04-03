@@ -19,20 +19,24 @@ const Product = () => {
 
     const SupplierTop = useSelector((state) => state.supplier.supplierTop);
 
-    const products = useSelector((state) => state.products.ProductTop)
+    const products = useSelector((state) => state.products.ProductTop);
+    const categories = useSelector((state) => state.category.categories);
+
+
     const navigation = useNavigation();
 
 
 
     const NagigateGioHang = () => {
-        return navigation.navigate("GioHang")
+        return navigation.navigate("GioHang");
     }
+
 
 
     return (
         <SafeAreaProvider>
             <View style={styles.container}>
-                <HeaderSanPham onPress={NagigateGioHang} />
+                <HeaderSanPham NavigateGioHang={NagigateGioHang} />
 
                 <ScrollView style={{ paddingHorizontal: 16 }}>
 
@@ -44,7 +48,7 @@ const Product = () => {
                     />
 
 
-                    <CategoryChip onPress={(category) => console.log(`Thống kê: ${category.name}`)} />
+                    <CategoryChip categories={categories} />
 
                     <Card style={{ padding: 10 }}>
                         <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>NHÀ CUNG CẤP NỔI BẬT</Text>

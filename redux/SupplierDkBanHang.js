@@ -1,21 +1,8 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import API, { endpoints } from "../Networking/API";
-
-
-
-export const LoadSupplierTop = createAsyncThunk("category/categoryTop",
-    async (_, { rejectWithValue }) => {
-        try {
-            const res = await API.get(endpoints.suppliers + "top/", {});
-            return res.data.map(item => item.user);
-        }
-        catch(error) {
-            return rejectWithValue(error.response?.data || "Lỗi không xác định");
-        }
-
-    }
-)
+import { createAsyncThunk, isRejectedWithValue } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { PaperProvider } from "react-native-paper";
+import API, { endpoints } from "../Networking/API";
 
 
 export const LoadSupplierDkBanHang = createAsyncThunk("supplier/SupplierDkBanHang",
@@ -49,36 +36,33 @@ export const LoadSupplierDkBanHang = createAsyncThunk("supplier/SupplierDkBanHan
 
 
 
-
-
-
-
 const initialState = {
-    supplierTop: [],
     SupplierDkBanHang: [],
-    loading: false, 
+    loading: false,
     error: null
+
 }
 
-
-const SupplierTopSlice = createSlice({
-    name: "supplier",
+const SupplierDkBanHangSlice = createSlice({
+    name: "supplierDKBanHang",
     initialState,
     extraReducers: (builder) => {
         builder
-            .addCase(LoadSupplierTop.pending, (state) => {
+            .addCase(LoadSupplierDkBanHang.pending, (state) => {
                 state.loading = true;
-            })
-            .addCase(LoadSupplierTop.fulfilled, (state, action) => {
-                state.loading = false;
-                state.supplierTop = action.payload;
             })
             .addCase(LoadSupplierDkBanHang.fulfilled, (state, action) => {
                 state.loading = false;
                 state.SupplierDkBanHang = action.payload;
             })
+            .addCase(LoadSupplierDkBanHang.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
     }
-});
 
 
-export default SupplierTopSlice.reducer
+})
+
+
+export default SupplierDkBanHangSlice.reducer;

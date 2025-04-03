@@ -7,6 +7,7 @@ export const  LoadProductTop = createAsyncThunk("product/productTop",
     async (_, { rejectWithValue }) => {
         try {
             const res = await API.get(endpoints.products + "top/", {});
+            console.log("Product Top: " + res.data);
             return res.data;
         }
         catch (error) {
@@ -15,6 +16,9 @@ export const  LoadProductTop = createAsyncThunk("product/productTop",
     }
 
 )
+
+
+
 
 
 

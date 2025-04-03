@@ -6,6 +6,7 @@ import store from "./redux/Store"
 import { useDispatch } from "react-redux";
 import { LoadSupplierTop } from "./redux/supplierTop";
 import { LoadProductTop } from "./redux/productTop";
+import { LoadCategory } from "./redux/categorys";
 import { useEffect } from "react";
 
 
@@ -15,6 +16,7 @@ function AppContent() {
   useEffect(() => {
     dispatch(LoadSupplierTop());
     dispatch(LoadProductTop());
+    dispatch(LoadCategory());
   }, [dispatch]);
 
 

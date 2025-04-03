@@ -14,12 +14,6 @@ const Tab = createBottomTabNavigator();
 
 
 const QuanLiCuaHang = () => {
-    const [CategoryInput, SetCategoryInput] = useState('');
-    // const [DanhMuc, setDanhMuc] = useState('');
-    const [ProductName, setProductName] = useState('');
-    const [UnitPrice, setUnitPrice] = useState('');
-    const [NumberInStore, setNumberInStore] = useState(0);
-    const [Description, setDescription] = useState('');
 
 
 
@@ -56,21 +50,14 @@ const QuanLiCuaHang = () => {
 
 
 
-    const [open, setOpen] = useState(false);
-    const [DanhMuc, setDanhMuc] = useState(null);
-    const [items, setItems] = useState([
-        { label: "Điện thoại", value: "phone" },
-        { label: "Laptop", value: "laptop" },
-        { label: "Máy tính bảng", value: "tablet" },
-    ]);
 
 
-    const props = {
-        CategoryInput, SetCategoryInput, ProductName, setProductName,
-        UnitPrice, setUnitPrice, NumberInStore, setNumberInStore,
-        Description, setDescription, open, setOpen, DanhMuc, setDanhMuc,
-        items, setItems
-    };
+    // const props = {
+    //     CategoryInput, SetCategoryInput, ProductName, setProductName,
+    //     UnitPrice, setUnitPrice, NumberInStore, setNumberInStore,
+    //     Description, setDescription, open, setOpen, DanhMuc, setDanhMuc,
+    //     items, setItems
+    // };
 
 
     return (
@@ -122,7 +109,7 @@ const QuanLiCuaHang = () => {
                     name="DanhMuc"
                     component={QuanLiSanPham}
                     options={{ tabBarLabel: "Danh Mục" }}
-                    initialParams={props}
+                 
                 />
                 <Tab.Screen
                     name="KhuyenMai"
@@ -141,15 +128,8 @@ const QuanLiCuaHang = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // paddingHorizontal: 16,
         marginTop: 16
-        // paddingVertical: 10
-        // }, button: {
-        //     marginTop: 20,
-        //     marginBottom: 20,
-        //     backgroundColor: '#d81b60',
-        //     paddingVertical: 8,
-        //     borderRadius: 5,
+
     }, body:
     {
         flexDirection: "row",

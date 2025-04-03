@@ -4,7 +4,7 @@ export const endpoints = {
     products: "/products/",
     users: "/users/", 
     permissions: "/permissions/",
-    categories: "/categories/",
+    categorys: "/categorys/",
     suppliers: "/suppliers/",
     comments: "/comments/",
 };

@@ -9,14 +9,7 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchPermissions } from '../redux/permission';
 import { logoutUser } from '../redux/userSlice';
-
-
-const menuItems = [
-    { id: '1', name: 'Ưu đãi của bạn', icon: 'ticket-percent', codename: "UuDaiCuaBan" },
-    { id: '2', name: 'Cập nhật mật khẩu', icon: 'lock-outline', codename: "CapNhatMatKhau" },
-    { id: '4', name: 'Xác nhận đăng kí bán hàng của khách hàng', icon: 'message-alert-outline', codename: "XacNhanDangKiBanHangChoKhachHang" },
-    { id: '5', name: 'Quản lí cửa hàng', icon: 'file-document-outline', codename: "QuanLiCuaHang" },
-];
+import InfoSupplier from './components/supplier';
 
 
 const TaiKhoan = () => {
@@ -25,7 +18,7 @@ const TaiKhoan = () => {
 
     const dispatch = useDispatch();
     const { data: permissions, loading, error } = useSelector((state) => state.permissions);
-
+    const info = useSelector((state) => state.user.supplier);
     
     useEffect(() => {
         if (user?.id) {
@@ -42,6 +35,8 @@ const TaiKhoan = () => {
     const Logout_User = () => {
 
         dispatch(logoutUser());
+
+        return navigation.navigate("App");
     }
     
 
@@ -59,16 +54,7 @@ const TaiKhoan = () => {
                     <Appbar.Action icon="cog-outline" onPress={() => navigation.navigate("ThongTinCaNhan")} />
                 </Appbar.Header>
 
-                <View style={{ height: 100 }}>
-                    <Card style={styles.body}>
-                        <Card.Content>
-                            <View style={styles.row}>
-                                <Avatar.Image size={60} source={{ uri: "https://your-avatar-url.com" }} />
-                                <Text style={styles.text}>Huỳnh Ngọc Trương</Text>
-                            </View>
-                        </Card.Content>
-                    </Card>
-                </View>
+                <InfoSupplier  info = {info}/>
 
                 <PaperProvider>
                     <Card style={styles.card}>

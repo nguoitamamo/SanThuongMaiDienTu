@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { View, Button, Text } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useDispatch } from "react-redux";
 import { addImage } from "../../redux/imageSlice";
 import { useSelector } from "react-redux";
 
-const UploadImage = () => {
+const UploadImage = memo(() => {
     const dispatch = useDispatch();
     const [newImage, setNewImage] = useState({id: 0,  nameImage: "", imageReal: "" });
     const ImageProduct = useSelector((state) => state.images.ImageProduct);
@@ -37,11 +37,11 @@ const UploadImage = () => {
     };
 
     return (
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
-            <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 8 }}>HÌNH ẢNH SẢN PHẨM</Text>
-            <Button title="Tải ảnh" color="#d81b60" onPress={pickImage} />
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10, marginTop: 10 }}>
+            <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 6 }}>HÌNH ẢNH SẢN PHẨM</Text>
+            <Button title="Tải ảnh" color="#d81b60" onPress={pickImage}/>
         </View>
     );
-};
+});
 
 export default UploadImage;

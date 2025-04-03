@@ -4,36 +4,39 @@ import { Chip } from "react-native-paper";
 
 
 
-const categories = [
-    { id: 1, name: "Điện thoại", icon: "cellphone" },
-    { id: 2, name: "Máy tính", icon: "desktop-mac" },
-    { id: 3, name: "Laptop", icon: "laptop" },
-    { id: 4, name: "Xe đạp", icon: "bike" },
-    { id: 5, name: "Mỹ phẩm", icon: "face-woman" },
-    { id: 6, name: "Thời trang", icon: "tshirt-crew" },
-    { id: 7, name: "Đồng hồ", icon: "watch" },
-    { id: 8, name: "Nội thất", icon: "sofa" },
-];
+// const categories = [
+//     { id: 1, name: "Điện thoại", icon: "cellphone" },
+//     { id: 2, name: "Máy tính", icon: "desktop-mac" },
+//     { id: 3, name: "Laptop", icon: "laptop" },
+//     { id: 4, name: "Xe đạp", icon: "bike" },
+//     { id: 5, name: "Mỹ phẩm", icon: "face-woman" },
+//     { id: 6, name: "Thời trang", icon: "tshirt-crew" },
+//     { id: 7, name: "Đồng hồ", icon: "watch" },
+//     { id: 8, name: "Nội thất", icon: "sofa" },
+// ];
 
 
 
 
-const CategoryChip = ( { onPress} ) => {
+const CategoryChip = ({ categories }) => {
+    console.log("card chip");
+    console.log(categories);
     return (
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             <View style={styles.chip}>
-                {categories.map((category) => (
-                    <Chip
-                        key={category.id}
-                        icon={category.icon}
-                        onPress={() => onPress(category)}
 
-                        style={{ width: 100 }}
-                    >
-                        {category.name}
+                {Array.isArray(categories) && categories.length > 0 && (
+                    categories.map((category) => (
+                        <Chip
+                            key={category.CategoryID}
+                            style={{ width: 100 }}
+                        >
+                            {category.CategoryName}
+                        </Chip>
+                    ))
+                )}
 
-                    </Chip>
-                ))}
+
             </View>
         </ScrollView>
     );

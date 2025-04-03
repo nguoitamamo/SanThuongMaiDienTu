@@ -1,12 +1,15 @@
 import React, { useState } from "react";
-import { Text, View, ScrollView, Dimensions, Image, StyleSheet } from "react-native";
-import { Card, Title, Paragraph, Avatar, TextInput } from "react-native-paper";
+import { Text, View, ScrollView, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { Card, Title, Paragraph, Avatar, TextInput, Icon, Button } from "react-native-paper";
 import { useEffect } from "react";
 import API, { endpoints } from "../Networking/API";
-import Icon from "react-native-vector-icons/FontAwesome";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import OneComment from "./components/OneComment";
 import { useNavigation } from "@react-navigation/native";
+import InfoSupplier from "./components/supplier";
+import { addToCart } from "../redux/cart";
+import { useDispatch, useSelector } from "react-redux";
+import { HeaderSanPham } from "./components/headerChiTietSanPham";
 
 const ChiTietSanPham = ({ route }) => {
     const { product } = route.params;
@@ -16,7 +19,7 @@ const ChiTietSanPham = ({ route }) => {
     });
 
     const [comment, setComment] = useState('');
-
+    const user = useSelector((state) => state.user.user);
 
     const fetchSupplierInfo = async () => {
         try {
@@ -59,14 +62,50 @@ const ChiTietSanPham = ({ route }) => {
 
 
 
-    // const navigation = useNavigation()
-    // const NavigateAllComment = () => {
-    //     return navigation.navigate("Allcomment");
-    // }
+    const navigation = useNavigation();
+
+    const dispatch = useDispatch();
+    const AddToCart = () => {
+        if (user) {
+            dispatch(addToCart(product));
+        }
+        else {
+            alert("Bạn cần đăng nhập!");
+        }
+    };
+
+    const NagigateThanhToan = () => {
+        if (user) {
+            return navigation.navigate("ThanhToan");
+        }else {
+            alert("Bạn cần đăng nhập!");
+        }
+    }
+
+    const AlertModal = () => {
+        return (
+            <Portal>
+            <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+
+                    <Text>
+                        Bạn cần đăng nhập?
+                    </Text>
+                    <View style={{ flexDirection: "row", justifyContent: "flex-end", marginHorizontal: 30, }}>
+                        <Button>Hủy</Button>
+                        <Button onPress= {Logout_User}>Đăng xuất</Button>
+
+                    </View>
+         
+            </Modal>
+        </Portal>
+        );
+    }
 
     return (
         <View style={styles.container}>
+
             <ScrollView>
+                {/* <HeaderSanPham onPress={NagigateGioHang} /> */}
                 <Card style={styles.card}>
                     <View>
                         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} pagingEnabled>
@@ -87,14 +126,21 @@ const ChiTietSanPham = ({ route }) => {
                         </View>
 
                         <Paragraph>{product.Description}</Paragraph>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                            <Paragraph style={styles.price}>Giá từ: {product.UnitPrice}</Paragraph>
 
-                        <Paragraph style={styles.price}>Giá từ: {product.UnitPrice}</Paragraph>
+                            <TouchableOpacity onPress={AddToCart}>
+                                <Icon source="cart" color="black" size={24} />
+                            </TouchableOpacity>
+
+                            <Button style={{ backgroundColor: '#d81b60' }} onPress={NagigateThanhToan}>Đặt hàng</Button>
+                        </View>
                     </Card.Content>
 
 
 
                 </Card>
-                <View style={[styles.supplier, styles.base]}>
+                {/* <View style={[styles.supplier, styles.base]}>
                     <Card >
                         <Card.Content>
                             <View style={styles.row}>
@@ -108,7 +154,9 @@ const ChiTietSanPham = ({ route }) => {
                             </View>
                         </Card.Content>
                     </Card>
-                </View>
+                </View> */}
+                <InfoSupplier info={info}
+                />
 
 
 
@@ -117,7 +165,7 @@ const ChiTietSanPham = ({ route }) => {
 
 
                 <Card style={styles.base}>
-                    <OneComment comment={commentEd} loading={loading} keyProp={true} id = {product.ProductID}/>
+                    <OneComment comment={commentEd} loading={loading} keyProp={true} id={product.ProductID} />
                     <KeyboardAwareScrollView alwaysVisible>
                         <TextInput
                             placeholder="Nhập bình luận..."
@@ -129,9 +177,12 @@ const ChiTietSanPham = ({ route }) => {
                 </Card>
 
 
-
-
             </ScrollView>
+
+
+
+
+
         </View>
     );
 };
