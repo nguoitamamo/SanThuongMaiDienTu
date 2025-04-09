@@ -8,7 +8,7 @@ import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 
-const ReviewCard = ({ comment, loading, keyProp,  id }) => {
+const ReviewCard = ({ comment, loading,  id }) => {
     // const [comment, setComment] = useState(null);
     // const [loading, setLoading] = useState(true);
 
@@ -76,15 +76,15 @@ const ReviewCard = ({ comment, loading, keyProp,  id }) => {
     );
 };
 
-const OneComment = ({ comment, loading, keyProp, id }) => {
+const OneComment = ({ comment, loading, id }) => {
+   
     return (
         <View style={{ flex: 1, padding: 10 }}>
             <ReviewCard
                 comment={comment}
                 loading={loading}
-                // {...(keyProp !== false && NavigateAllComment && { NavigateAllComment })}
-                keyProp={keyProp}
                 id = {id}
+                
     
             />
         </View>

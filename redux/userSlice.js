@@ -53,7 +53,9 @@ export const loginUser = createAsyncThunk("users/login", async ({ username, pass
       }
     });
 
-    const token = await getToken(username, password);
+    const token = await getToken(username, password); 
+
+
     let supplier = null;
 
     if (res.data.role === "Supplier") {
@@ -68,6 +70,18 @@ export const loginUser = createAsyncThunk("users/login", async ({ username, pass
   }
 }
 );
+
+export const LoadStateOrder = createAsyncThunk("stateorder/StateOrder",
+  async (_, { rejectWithValue }) => {
+      try {
+          let res = await API.get(endpoints.stateorder, {});
+          return res.data;
+      }
+      catch(error) {
+          return rejectWithValue(error.response?.data || "Lỗi không xác định");
+      }
+  }
+)
 
 
 
@@ -116,13 +130,33 @@ export const LoadCategorySupplier = createAsyncThunk(
   }
 );
 
+export const LoadSuggestProduct = createAsyncThunk(
+  "suggest/SuggestProduct",
+  async ({userid}, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const token = state.user.token;
 
+      const res = await API.get(endpoints.customers + userid + "/suggest/",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      return res.data;
+    } catch (error) {
+      console.error("Lỗi Suggest:", error.response?.data || error.message);
+      return rejectWithValue(error.response ? error.response.data : error.message);
+    }
+  }
+);
 
 
 
 const userSlice = createSlice({
   name: "user",
-  initialState: { user: null, loading: false, error: null, token: null, supplier: null, category: null },
+  initialState: { user: null, loading: false, error: null, token: null, supplier: null, category: null, stateorder: [], suggestproducts: []},
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
@@ -154,6 +188,22 @@ const userSlice = createSlice({
         state.category = action.payload;
         state.loading = false;
       })
+      .addCase(LoadStateOrder.fulfilled , (state, action) => {
+        state.stateorder = action.payload;
+        state.loading = false;
+      })
+      .addCase(LoadSuggestProduct.fulfilled, (state, action) => {
+        state.suggestproducts = action.payload;
+        state.loading = false;
+      })
+      .addCase(LoadSuggestProduct.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(LoadSuggestProduct.rejected, (state) => {
+        state.error = true;
+        state.loading = false;
+      })
+      
   },
 });
 

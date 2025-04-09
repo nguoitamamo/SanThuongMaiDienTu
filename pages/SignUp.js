@@ -130,6 +130,7 @@ const SignUp = () => {
                     setOpen={setOpen}
                     setValue={setrole}
                     setItems={setItems}
+                    searchable={true}
                     placeholder="Chọn phương thức..."
                 />
                 <KeyboardAwareScrollView

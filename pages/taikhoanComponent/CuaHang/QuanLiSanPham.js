@@ -140,7 +140,7 @@ const QuanLiSanPham = () => {
             <ScrollView>
 
                 <View style={styles.base}>
-                    <UploadImage />
+                    <UploadImage/>
                     <CardImage providers={ImageProduct} />
                 </View>
 

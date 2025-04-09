@@ -3,24 +3,7 @@ import { Chip } from "react-native-paper";
 
 
 
-
-// const categories = [
-//     { id: 1, name: "Điện thoại", icon: "cellphone" },
-//     { id: 2, name: "Máy tính", icon: "desktop-mac" },
-//     { id: 3, name: "Laptop", icon: "laptop" },
-//     { id: 4, name: "Xe đạp", icon: "bike" },
-//     { id: 5, name: "Mỹ phẩm", icon: "face-woman" },
-//     { id: 6, name: "Thời trang", icon: "tshirt-crew" },
-//     { id: 7, name: "Đồng hồ", icon: "watch" },
-//     { id: 8, name: "Nội thất", icon: "sofa" },
-// ];
-
-
-
-
-const CategoryChip = ({ categories }) => {
-    console.log("card chip");
-    console.log(categories);
+const CategoryChip = ({ categories , onPress = () => {}}) => {
     return (
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             <View style={styles.chip}>
@@ -29,7 +12,8 @@ const CategoryChip = ({ categories }) => {
                     categories.map((category) => (
                         <Chip
                             key={category.CategoryID}
-                            style={{ width: 100 }}
+                            style = {{ flex: 1}}
+                            onPress={() => onPress(category)}
                         >
                             {category.CategoryName}
                         </Chip>

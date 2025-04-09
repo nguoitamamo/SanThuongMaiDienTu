@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { LoadSupplierTop } from "./redux/supplierTop";
 import { LoadProductTop } from "./redux/productTop";
 import { LoadCategory } from "./redux/categorys";
+import { LoadStateOrder } from "./redux/userSlice";
 import { useEffect } from "react";
 
 
@@ -17,6 +18,7 @@ function AppContent() {
     dispatch(LoadSupplierTop());
     dispatch(LoadProductTop());
     dispatch(LoadCategory());
+    dispatch(LoadStateOrder());
   }, [dispatch]);
 
 

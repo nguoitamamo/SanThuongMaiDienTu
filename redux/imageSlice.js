@@ -11,12 +11,15 @@ const imageSlice = createSlice({
         addImage: (state, action) => {
             state.ImageProduct.push(action.payload);
         },
-        removeImage: (state, action) => {
+        removeImage: (state) => {
             state.ImageProduct = [];
+        },
+        removeImageID: (state, action) => {
+            state.ImageProduct = state.ImageProduct.filter(img => img.id !== action.payload);
         }
     },
 });
 
-export const { addImage, setImages } = imageSlice.actions;
+export const { addImage, removeImageID } = imageSlice.actions;
 export const { removeImage } = imageSlice.actions;
 export default imageSlice.reducer;

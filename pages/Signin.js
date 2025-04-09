@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Appbar, Button, Card, Avatar, TextInput, useTheme } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -6,6 +6,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/userSlice";
+import { LoadGioHang } from "../redux/cart";
+import { LoadSuggestProduct } from "../redux/userSlice";
 
 
 const SignIn = () => {
@@ -14,8 +16,16 @@ const SignIn = () => {
 
     const dispatch = useDispatch();
     const { user, loading, error } = useSelector((state) => state.user);
-    const handleLogin = () => {
-        dispatch(loginUser({ username, password }));
+    const handleLogin = async () => {
+        const result = await dispatch(loginUser({ username, password }));
+
+        if (loginUser.fulfilled.match(result)) {
+            const { user } = result.payload;
+            dispatch(LoadGioHang({ userid: user.id }));
+            dispatch(LoadSuggestProduct({userid: user.id}));
+        } else {
+            console.log("Login thất bại:", result.payload);
+        }
     };
     const navigation = useNavigation();
     useEffect(() => {
@@ -25,7 +35,7 @@ const SignIn = () => {
         }
     }, [user]);
 
-    
+
     return (
         <SafeAreaProvider>
             <View style={styles.container}>
@@ -38,11 +48,11 @@ const SignIn = () => {
                         <TextInput label="Tên Tài khoản" value={username} onChangeText={SetUsername} mode="outlined" />
                         <TextInput label="Mật Khẩu" value={password} onChangeText={setPassword} mode="outlined" />
 
-                        {error && <Text style={{ color: "red"}}>Tên tài khoản hoặc mật khẩu không chính xác!</Text>}
+                        {error && <Text style={{ color: "red" }}>Tên tài khoản hoặc mật khẩu không chính xác!</Text>}
 
-                        <Button mode="contained" style={styles.button} onPress={handleLogin} loading={loading}>
+                        <Button mode="contained" style={styles.button} onPress={()=> handleLogin()} loading={loading}>
                             {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
-                            
+
                         </Button>
                     </View>
                 </Card>

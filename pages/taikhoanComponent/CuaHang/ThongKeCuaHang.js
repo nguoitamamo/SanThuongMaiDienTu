@@ -116,7 +116,7 @@ const ThongKeCuaHang = () => {
 
                                                         <Image
                                                             source={{ uri: product.images[0] || 'https://via.placeholder.com/100' }}
-                                                            style={{ width: 80, height: 80, marginLeft: 10, backgroundColor: 'red', borderRadius: 10 }}
+                                                            style={{ width: 80, height: 80,  backgroundColor: 'red', borderRadius: 10 }}
                                                         />
                                                         <View style={{ marginLeft: 10, flex: 1 }}>
                                                             <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{product.ProductName}</Text>
@@ -188,7 +188,7 @@ const ThongKeCuaHang = () => {
                         </View>
 
 
-                        <Text style = {{ color: "red", fontSize: 20, fontWeight: "bold"}}>Tổng danh thu: {data?.total ? data.total.toLocaleString('en-US') + ' VND' : 'N/A'} </Text>
+                        <Text style = {[styles.base, { color: "red", fontSize: 20, fontWeight: "bold"}]}>Tổng danh thu: {data?.total ? data.total.toLocaleString('en-US') + ' VND' : 'N/A'} </Text>
 
                     </ScrollView>
                 )}

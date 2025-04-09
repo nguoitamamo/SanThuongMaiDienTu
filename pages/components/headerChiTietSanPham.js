@@ -1,18 +1,20 @@
 
-
+import { memo } from "react";
 import { Appbar , Badge } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { View } from "react-native";
 
 
-export const HeaderSanPham = ({ NavigateGioHang}) => {
+export const HeaderSanPham = memo(({ NavigateGioHang, title}) => {
+    
+    const cart = useSelector((state) => state.cart.products);
 
-    const products = useSelector(state => state.cart.products);
-    const totalQuantity = products.reduce((sum, item) => sum + item.quantity, 0);
-
+    const totalQuantity = cart?.reduce((sum, item) => sum + item.order_details[0].Quantity, 0);
+  
+    console.log("đây " + totalQuantity);
     return (
         <Appbar.Header>
-            <Appbar.Content title="HNT" titleStyle={{ fontSize: 28, fontWeight: "bold", color: "#e91e63" }} />
+            <Appbar.Content title={title} titleStyle={{ fontSize: 28, fontWeight: "bold", color: "#e91e63" }} />
             <Appbar.Action icon="bell-outline" onPress={() => { }} />
             <Appbar.Action icon="message-outline" onPress={() => { }} />
             <View style={{ position: "relative" }}>
@@ -36,5 +38,5 @@ export const HeaderSanPham = ({ NavigateGioHang}) => {
         </Appbar.Header>
 
     );
-};
+});
 

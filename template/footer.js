@@ -4,10 +4,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Badge } from "react-native-paper";
+import { Badge, TextInput, Title, Searchbar } from "react-native-paper";
 import { View } from "react-native";
 
-// Import các màn hình
+
 import Product from "../pages/Product";
 import TaiKhoan from "../pages/TaiKhoan";
 import Thuong from "../pages/Thuong";
@@ -28,6 +28,7 @@ import Allcomment from "../pages/Allcomment";
 import App from "../App";
 import ThanhToan from "../pages/ThanhToan";
 
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -35,6 +36,7 @@ const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
   const { user } = useSelector((state) => state.user);
   const [isLoggedIn, setIsLoggedIn] = useState(!!user);
+
 
   useEffect(() => {
     setIsLoggedIn(!!user);
@@ -79,8 +81,8 @@ const TabNavigator = () => {
 
 
 const CartIconWithBadge = ({ navigation }) => {
-  const products = useSelector(state => state.cart.products);
-  const totalQuantity = products.reduce((sum, item) => sum + item.quantity, 0);
+  const cart = useSelector(state => state.cart.products);
+  const totalQuantity = cart.reduce((sum, item) => sum + item.order_details[0].Quantity, 0);
 
   return (
     <View style={{ position: "relative", marginRight: 15 }}>
@@ -109,7 +111,26 @@ const CartIconWithBadge = ({ navigation }) => {
   );
 };
 
+// const TextInputSearch = ({ navigation }) => {
+//   const [searchQuery, setSearchQuery] = useState("");
+//   return (
+//     <View style = {{  flexDirection: "row"}}>
+//       <Searchbar
+//         placeholder={searchQuery}
+//         value={searchQuery}
+//         onChangeText={setSearchQuery}
+//         onIconPress={() => navigation.navigate("TimKiem", { searchQuery })}
+//         onSubmitEditing={() => navigation.navigate("TimKiem", { searchQuery })}
+//         style={{ borderRadius: 10, width: 300, height: 50 }}
+//       />
+
+//     </View>
+//   );
+
+// }
+
 const MainStack = () => (
+
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Main" component={TabNavigator} />
     <Stack.Screen name="ThongTinCaNhan" component={ProfileScreen} options={{ headerShown: true, title: "Thông tin cá nhân" }} />
@@ -130,7 +151,7 @@ const MainStack = () => (
       options={({ navigation }) => ({
         headerShown: true,
         title: "Chi Tiết Sản Phẩm",
-        headerRight: () => <CartIconWithBadge navigation={navigation} />, // Hiển thị icon có Badge
+        headerRight: () => <CartIconWithBadge navigation={navigation} />,
       })}
     />
 
@@ -170,6 +191,7 @@ const MainStack = () => (
         ),
       })}
     />
+
   </Stack.Navigator>
 );
 

@@ -30,11 +30,12 @@ const styles = StyleSheet.create({
     text: { marginLeft: 10, fontWeight: 'bold', fontSize: 22 },
     supplier: {
         height: 100,
+        marginTop: 10
 
     },
     base: {
-        marginLeft: 10,
-        marginRight: 10,
+        // marginLeft: 10,
+        // marginRight: 10,
         // marginBottom: 10,
     }
 });

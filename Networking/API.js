@@ -7,6 +7,8 @@ export const endpoints = {
     categorys: "/categorys/",
     suppliers: "/suppliers/",
     comments: "/comments/",
+    stateorder: "/state-orders/",
+    customers: "/customers/"
 };
 
 const API = axios.create({

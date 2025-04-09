@@ -6,7 +6,6 @@ import { ScrollView, View } from "react-native";
 
 const CardImage = memo(( { providers }) => { 
 
-    console.log( " Đay: " +  providers);
 
     return (
         <View>
