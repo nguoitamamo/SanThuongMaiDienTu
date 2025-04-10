@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
-import { Card, Button, Checkbox, RadioButton  } from 'react-native-paper';
+import { Card, Button, Checkbox, RadioButton, IconButton } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import API, { endpoints } from '../Networking/API';
-import { LoadGioHang } from '../redux/cart';
+import { LoadGioHang, UpdateGioHang, RemoveProductGioHang } from '../redux/cart';
+
 
 const GioHang = () => {
     const [checkedItems, setCheckedItems] = useState({});
@@ -18,17 +19,7 @@ const GioHang = () => {
     const navigation = useNavigation();
 
 
-    // useEffect(() => {
-    //     if (user && token) {
-    //         dispatch(LoadGioHang({ userid: user.id, token }));
-    //     }
-    // }, [dispatch, user, token]);
-
     const cart = useSelector((state) => state.cart.products);
-
-
-
-
 
     const toggleItemChecked = (id) => {
         setCheckedItems((prev) => ({
@@ -69,32 +60,29 @@ const GioHang = () => {
 
 
     const RemoveOrderCart = async (orderid) => {
-        try {
-            await API.post(endpoints.customers + user.id + "/removegiohang/?order_id=" + orderid, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-            })
-            alert("Xóa thành công pko");
-
-        }
-        catch (error) {
-            console.log(error);
-        }
-
+        await dispatch(RemoveProductGioHang({userid: user.id , orderid, token}))
+        dispatch(LoadGioHang({ userid: user.id }));
     }
 
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-       
+
         setTimeout(() => {
             setRefreshing(false);
             dispatch(LoadGioHang({ userid: user.id }));
         }, 500);
     });
 
+    const handleChangeQuantity = ({ ProductID, OrderID, quantity }) => {
+       
+        if (quantity >= 1) {
+            dispatch(UpdateGioHang({ ProductID, OrderID, token, quantity }));
+        }else {
+            RemoveOrderCart(OrderID);
+        }
+    }
 
 
     return (
@@ -130,17 +118,41 @@ const GioHang = () => {
                                                 </View>
 
                                                 <View style={{ marginLeft: 10, flex: 1 }}>
-                                                    <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{product.product.ProductName}</Text>
-                                                    <Text style={{ fontSize: 12, color: 'red', fontWeight: 'bold' }}>
-                                                        Giá: {product.product.UnitPrice}
-                                                    </Text>
-                                                    <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                                                        <Text style={{ fontSize: 12 }}>Số lượng: {product.Quantity}</Text>
-                                                        <Text style={{ fontSize: 12 }}>Date: {item.created_date}</Text>
-
+                                                    <View style={{ flexDirection: "row" }}>
+                                                        <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{product.product.ProductName}</Text>
                                                         {product.Discount !== 0.0 && (
                                                             <Text style={{ fontSize: 12 }}>Giảm giá: {product.Discount} %</Text>
                                                         )}
+                                                    </View>
+                                                    <Text style={{ fontSize: 12, color: 'red', fontWeight: 'bold' }}>
+                                                        Giá: {product.product.UnitPrice}
+                                                    </Text>
+                                                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                            <IconButton
+                                                                icon="minus"
+                                                                size={20}
+                                                                onPress={() => handleChangeQuantity({
+                                                                    ProductID: product.product.ProductID,
+                                                                    OrderID: item.OrderID,
+                                                                    quantity: product.Quantity - 1
+                                                                })}
+                                                            />
+                                                            <Text style={{ fontSize: 14 }}>{product.Quantity}</Text>
+                                                            <IconButton
+                                                                icon="plus"
+                                                                size={20}
+                                                                onPress={() => handleChangeQuantity({
+                                                                    ProductID: product.product.ProductID,
+                                                                    OrderID: item.OrderID,
+                                                                    quantity: product.Quantity + 1
+                                                                })}
+                                                            />
+                                                        </View>
+                                                        <Text style={{ fontSize: 12 }}>Date: {item.created_date}</Text>
+
+
                                                     </View>
                                                 </View>
                                                 <Checkbox
@@ -185,7 +197,7 @@ const GioHang = () => {
 
                     </View>
 
-                    <Text style={styles.totalPrice}>Tổng tiền: {totalPrice.toLocaleString()} VND</Text>
+                    {/* <Text style={styles.totalPrice}>Tổng tiền: {totalPrice.toLocaleString()} VND</Text> */}
 
                     <Button mode="contained" style={styles.button} onPress={handleDatHang}>
                         Đặt hàng

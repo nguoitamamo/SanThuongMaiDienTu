@@ -5,6 +5,7 @@ import { ScrollView, View } from "react-native";
 
 
 const CardImage = memo(( { providers }) => { 
+    console.log("ddaaay 111: " + providers);
 
 
     return (
@@ -12,8 +13,8 @@ const CardImage = memo(( { providers }) => {
             
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} pagingEnabled>
                     {providers.map((provider) => (
-                        <View key={provider.id} style={{ alignItems: 'center' }}>
-                            <Card.Cover source={{ uri: provider.avatar }} style={{ width: 170, marginRight: 10 }} />
+                        <View key={provider?.id} style={{ alignItems: 'center' }}>
+                            <Card.Cover source={{ uri: provider?.avatar }} style={{ width: 170, marginRight: 10 }} />
                         </View>
                     ))}
                 </ScrollView>

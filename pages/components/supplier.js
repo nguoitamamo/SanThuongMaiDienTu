@@ -1,23 +1,41 @@
 import { View, StyleSheet } from "react-native";
 import { Card, Text, Avatar } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { useSelector } from "react-redux";
 
-const InfoSupplier = ( {info}) => {
+const InfoBase = ({ user }) => {
+
 
     return (
 
-        <View style={[styles.supplier ,styles.base ]}>
+        <View style={[styles.supplier, styles.base]}>
             <Card >
                 <Card.Content>
-                    <View style={styles.row}>
-                        <Avatar.Image size={60} source={{ uri: info?.user?.avatar }} />
-                        <Text style={styles.text}>{info?.CompanyName}
-                        </Text>
-                        <View style={{ flexDirection: "row", alignItems: "center" }}>
-                            <Text>{info?.TotalRating?.toFixed(1)} / 5 </Text>
-                            <Icon name="star" size={20} color="gold" />
+                    {user && (
+                        <View style={styles.row}>
+
+                            <Avatar.Image size={60} source={{ uri: user.avatar }} />
+                            <Text style={styles.text}>{user.last_name ? `${user.last_name} ${user.first_name}` : user.CompanyName} </Text>
+
+                            <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                {user.role == "Customer" || user.role == "Employee" ? (
+                                    <Text sytle={{ fontSize: 15 }}>( {user.username} )</Text>
+
+                                ) : (
+                                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                                        <Text> ( {user?.TotalRating?.toFixed(1)} / 5 ) /
+                                            <Text style = {{fontSize: 10, marginTop: 10}}>{user.TotalComment}</Text>
+                                        </Text>
+                                        <Icon name="star" size={20} color="gold" />
+                                    </View>
+                                )}
+
+
+                            </View>
+
+
                         </View>
-                    </View>
+                    )}
                 </Card.Content>
             </Card>
         </View>
@@ -39,4 +57,4 @@ const styles = StyleSheet.create({
         // marginBottom: 10,
     }
 });
-export default InfoSupplier;
+export default InfoBase;

@@ -8,7 +8,7 @@ export const LoadSupplierTop = createAsyncThunk("category/categoryTop",
     async (_, { rejectWithValue }) => {
         try {
             const res = await API.get(endpoints.suppliers + "top/", {});
-            return res.data.map(item => item.user);
+            return res.data;
         }
         catch(error) {
             return rejectWithValue(error.response?.data || "Lỗi không xác định");

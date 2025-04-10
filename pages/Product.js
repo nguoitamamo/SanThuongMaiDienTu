@@ -18,15 +18,14 @@ import { LoadTimKiem } from "../redux/productTop";
 
 
 const Product = () => {
-    const [searchQuery, setSearchQuery] = React.useState("");
+    const [searchQuery, setSearchQuery] = useState("");
 
     const SupplierTop = useSelector((state) => state.supplier.supplierTop);
 
     const products = useSelector((state) => state.products.ProductTop);
     const categories = useSelector((state) => state.category.categories);
     const suggestproducts = useSelector((state) => state.user.suggestproducts);
-
-
+  
 
     const navigation = useNavigation();
 
@@ -68,7 +67,7 @@ const Product = () => {
                     contentContainerStyle={{ paddingHorizontal: 10 }}
                     ListHeaderComponent={
                         <>
-                            <HeaderSanPham NavigateGioHang={NagigateGioHang} title="HNT" />
+                            <HeaderSanPham NavigateGioHang={NagigateGioHang} title="HNT"/>
 
                             <View style={{ flexDirection: "row"}}>
                                 <Searchbar
@@ -172,7 +171,6 @@ const Product = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f5f5f5"
     }, card: {
         padding: 10,
     },

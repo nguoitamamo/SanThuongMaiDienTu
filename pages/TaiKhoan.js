@@ -3,31 +3,30 @@ import { Appbar, Avatar, Card, List, Divider, Button, Modal, Portal, PaperProvid
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';  // Thêm useNavigation
+import { useNavigation } from '@react-navigation/native'; 
 import SignUp from './SignUp';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchPermissions } from '../redux/permission';
 import { logoutUser } from '../redux/userSlice';
-import InfoSupplier from './components/supplier';
+import InfoBase from './components/supplier';
 
 
 const TaiKhoan = () => {
     const navigation = useNavigation();
-    const { user } = useSelector((state) => state.user);
+    const user  = useSelector((state) => state.user.user);
 
     const dispatch = useDispatch();
     const { data: permissions, loading, error } = useSelector((state) => state.permissions);
-    const info = useSelector((state) => state.user.supplier);
-    
+
     useEffect(() => {
         if (user?.id) {
-            dispatch(fetchPermissions(user.id)); // Gọi action để lấy quyền
+            dispatch(fetchPermissions(user.id));
         }
     }, [user, dispatch]);
 
 
-    const [visible, setVisible] = React.useState(false);
+    const [visible, setVisible] = useState(false);
 
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
@@ -36,9 +35,9 @@ const TaiKhoan = () => {
 
         dispatch(logoutUser());
 
-        return navigation.navigate("App");
+        return navigation.navigate("AppMain");
     }
-    
+
 
     return (
         <SafeAreaProvider>
@@ -54,23 +53,23 @@ const TaiKhoan = () => {
                     <Appbar.Action icon="cog-outline" onPress={() => navigation.navigate("ThongTinCaNhan")} />
                 </Appbar.Header>
 
-                <InfoSupplier  info = {info}/>
+                <InfoBase user= {user}  />
 
                 <PaperProvider>
                     <Card style={styles.card}>
-                    
+
                         <Portal>
                             <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
 
-                                    <Text>
-                                        Bạn chắc chắn muốn đăng xuất?
-                                    </Text>
-                                    <View style={{ flexDirection: "row", justifyContent: "flex-end", marginHorizontal: 30, }}>
-                                        <Button>Hủy</Button>
-                                        <Button onPress= {Logout_User}>Đăng xuất</Button>
+                                <Text>
+                                    Bạn chắc chắn muốn đăng xuất?
+                                </Text>
+                                <View style={{ flexDirection: "row", justifyContent: "flex-end", marginHorizontal: 30, }}>
+                                    <Button>Hủy</Button>
+                                    <Button onPress={Logout_User}>Đăng xuất</Button>
 
-                                    </View>
-                         
+                                </View>
+
                             </Modal>
                         </Portal>
 
@@ -123,22 +122,14 @@ const TaiKhoan = () => {
 };
 
 
-// const TaiKhoan = () => {
-//     return (
-
-//         <Stack.Navigator>
-//             <Stack.Screen name="TaiKhoanScreen" component={TaiKhoanScreen} options={{ headerShown: false }} />
-//             <Stack.Screen name="ThongTinCaNhan" component={ProfileScreen} options={{ title: "Thông tin cá nhân" }} />
-//         </Stack.Navigator>
-//     );
-// };
-
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f8f8f8' },
+    container: { flex: 1,paddingHorizontal: 10  },
     body: { flex: 1, flexDirection: "row", alignItems: 'center', justifyContent: 'center', margin: 10 },
     row: { flexDirection: 'row', alignItems: 'center' },
     text: { marginLeft: 10, fontWeight: 'bold', fontSize: 22 },
-    card: { marginHorizontal: 10, marginVertical: 5, borderRadius: 10 },
+    card: { 
+        padding: 10
+    },
     title: { fontSize: 16, color: '#333' }
 });
 

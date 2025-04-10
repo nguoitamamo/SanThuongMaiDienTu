@@ -6,22 +6,18 @@ import API, { endpoints } from "../Networking/API";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import OneComment from "./components/OneComment";
 import { useNavigation } from "@react-navigation/native";
-import InfoSupplier from "./components/supplier";
+import InfoBase from "./components/supplier";
 import { AddToCart } from "../redux/cart";
 import { useDispatch, useSelector } from "react-redux";
 import TextInputCommnet from "./components/textInputComnet";
 import OneProduct from "./components/product";
-import { useFocusEffect } from '@react-navigation/native';
-import { addIDEdComment, removeIDEdComment } from "../redux/comment";
 
 
 
 const ChiTietSanPham = ({ route }) => {
     const { product } = route.params;
 
-    const [info, setInfo] = useState({
-
-    });
+    const [info, setInfo] = useState({});
 
 
     const user = useSelector((state) => state.user.user);
@@ -31,6 +27,7 @@ const ChiTietSanPham = ({ route }) => {
         try {
             let res = await API.get(endpoints.suppliers + product.Supplier_id + "/info_short/");
             setInfo(res.data);
+            
         } catch (error) {
             console.error("Lỗi khi gọi API111:", error);
         }
@@ -203,23 +200,7 @@ const ChiTietSanPham = ({ route }) => {
 
                                 </Card>
 
-                                {/* <View style={[styles.supplier, styles.base]}>
-                    <Card >
-                        <Card.Content>
-                            <View style={styles.row}>
-                                <Avatar.Image size={60} source={{ uri: info?.user?.avatar }} />
-                                <Text style={styles.text}>{info?.CompanyName}
-                                </Text>
-                                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                    <Text>{info?.TotalRating?.toFixed(1)} / 5 </Text>
-                                    <Icon name="star" size={20} color="gold" />
-                                </View>
-                            </View>
-                        </Card.Content>
-                    </Card>
-                </View> */}
-                                <InfoSupplier info={info}
-                                />
+                                <InfoBase user={info}/>
 
                                 <Card >
                                     <OneComment comment={commentEd} loading={loading} id={product.ProductID}   />

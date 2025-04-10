@@ -68,7 +68,7 @@ const Allcomment = () => {
             setComments(res.data);
         } catch (error) {
             setLoading(false);
-            console.log(error);
+            console.log(error);  
         } finally {
             setLoading(false);
         }

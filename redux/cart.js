@@ -2,11 +2,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import API, { endpoints } from "../Networking/API";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export const LoadGioHang = createAsyncThunk("cart/Cart",
     async ({ userid }, { getState, rejectWithValue }) => {
         try {
-            const token = getState().user.token;
+            const state = getState();
+            const token = state.user.token;
+
 
             let res = await API.get(endpoints.customers + userid + "/getgiohang/", {
                 headers: {
@@ -25,9 +28,6 @@ export const LoadGioHang = createAsyncThunk("cart/Cart",
 export const AddToCart = createAsyncThunk("addtocart/AddToCart",
     async ({ userid, token, product }, { rejectWithValue }) => {
         try {
-            console.log(userid);
-            console.log(product);
-            console.log(token);
 
             let res = await API.post(endpoints.customers + userid + "/addgiohang/",
                 product
@@ -48,12 +48,50 @@ export const AddToCart = createAsyncThunk("addtocart/AddToCart",
     }
 )
 
+export const RemoveProductGioHang = createAsyncThunk("removegiohang/RemoveGioHang",
+    async ({ userid, orderid, token }) => {
+        try {
 
+            const formData = new FormData();
+            formData.append("OrderID", orderid);
+            let res = await API.post(endpoints.customers + userid + "/removegiohang/",
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "multipart/form-data",
+                    },
+                })
+            return res.data.order_id;
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+)
 
+export const UpdateGioHang = createAsyncThunk("updategiohang/UpdateGioHang",
+    async ({ OrderID, ProductID, token, quantity }, { rejectWithValue }) => {
+        try {
+            const formData = new FormData();
+            formData.append("OrderID", OrderID);
+            formData.append("ProductID", ProductID);
+            formData.append("Quantity", quantity);
+            let res = await API.patch(endpoints.customers + "updategiohang/", formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            })
 
+            return res.data;
 
-
-
+        }
+        catch (error) {
+            return rejectWithValue(error.response?.data || "Lỗi không xác định");
+        }
+    }
+)
 
 const initialState = {
     products: [],
@@ -89,6 +127,32 @@ const cartSlice = createSlice({
                 state.error = true;
                 console.log("Đã lõip");
             })
+            .addCase(UpdateGioHang.pending, (state) => {
+                console.log("Đang gọi API");
+                state.loading = true;
+            })
+            .addCase(UpdateGioHang.fulfilled, (state, action) => {
+                state.loading = false;
+                const updatedOrder = action.payload;
+                state.products.forEach(order => {
+                    if (order.OrderID === updatedOrder.OrderID) {
+                        order.order_details.forEach(detail => {
+                            detail.Quantity = updatedOrder.order_details[0].Quantity
+                        });
+                    }
+                });
+
+
+            })
+            .addCase(UpdateGioHang.rejected, (state) => {
+                state.error = true;
+                console.log("đã lỗi");
+            })
+            .addCase(RemoveProductGioHang.fulfilled, (state, action) => {
+                state.products = state.products.filter(order => order.OrderID !== action.payload);
+            })
+
+
     }
 })
 

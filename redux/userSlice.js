@@ -58,13 +58,13 @@ export const loginUser = createAsyncThunk("users/login", async ({ username, pass
 
     let supplier = null;
 
-    if (res.data.role === "Supplier") {
+    // if (res.data.role === "Supplier") {
 
-      supplier = await SupplierInfo(res.data.id);
-    }
+    //   supplier = await SupplierInfo(res.data.id);
+    // }
 
 
-    return { user: res.data, token, supplier };
+    return { user: res.data, token };
   } catch (error) {
     return rejectWithValue(error.response?.data || "Lỗi không xác định");
   }
@@ -156,13 +156,13 @@ export const LoadSuggestProduct = createAsyncThunk(
 
 const userSlice = createSlice({
   name: "user",
-  initialState: { user: null, loading: false, error: null, token: null, supplier: null, category: null, stateorder: [], suggestproducts: []},
+  initialState: { user: null, loading: false, error: null, token: null, category: null, stateorder: [], suggestproducts: []},
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
-        state.supplier = action.payload.supplier;
+        // state.supplier = action.payload.supplier;
         state.loading = false;
 
         console.log("ID user" + state.user.id);

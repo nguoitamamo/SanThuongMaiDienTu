@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView } from 'react-native';
 import { Card, Button } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -6,10 +6,10 @@ import { Checkbox } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { LoadSupplierDkBanHang } from '../../../redux/supplierTop';
-import API, {endpoints} from '../../../Networking/API';
+import API, { endpoints } from '../../../Networking/API';
 
 const XacNhanDangKiBanHangChoKhachHang = () => {
-    const [checkedItems, setCheckedItems] = React.useState({}); // Lưu trạng thái checked theo ID
+    const [checkedItems, setCheckedItems] = useState({});
 
     const dispatch = useDispatch();
 
@@ -22,52 +22,67 @@ const XacNhanDangKiBanHangChoKhachHang = () => {
     const toggleCheckbox = (id) => {
         setCheckedItems(prevState => ({
             ...prevState,
-            [id]: !prevState[id] // Chỉ thay đổi trạng thái của checkbox cụ thể
+            [id]: !prevState[id]
         }));
     };
 
     const toggleAllCheckboxes = () => {
-        const allChecked = Object.values(checkedItems).every(value => value); // Kiểm tra nếu tất cả đã checked
+        const allChecked = Object.values(checkedItems).every(value => value);
         const newCheckedState = {};
 
         SupplierDkBanHang.forEach(supplier => {
-            newCheckedState[supplier.id] = !allChecked; // Nếu tất cả đã checked, bỏ chọn tất cả, ngược lại chọn tất cả
+            newCheckedState[supplier.id] = !allChecked;
         });
 
         setCheckedItems(newCheckedState);
     };
 
-    useEffect( () => {
+
+    useEffect(() => {
+        if (Array.isArray(SupplierDkBanHang)) {
+            const initialChecked = {};
+            SupplierDkBanHang.forEach(s => {
+                initialChecked[s.id] = false; 
+            });
+            setCheckedItems(initialChecked);
+        }
+    }, [SupplierDkBanHang]);
+
+    useEffect(() => {
         console.log(checkedItems);
     }, [checkedItems])
 
-
+    const [loading, setLoading] = useState(false);
     const XacNhanDKBanHang = async () => {
         try {
             console.log(token);
-           
-            const selectedIds = Object.keys(checkedItems).filter(id => checkedItems[id]); 
-    
+
+            setLoading(true);
+
+            const selectedIds = Object.keys(checkedItems).filter(id => checkedItems[id]);
+
             if (selectedIds.length === 0) {
                 return;
             }
-    
+
             await Promise.all(
                 selectedIds.map(async (id) => {
-                    await API.patch(endpoints.suppliers + id + "/xacnhan_dk_banhang/", {}, { 
+                    await API.patch(endpoints.suppliers + id + "/xacnhan_dk_banhang/", {}, {
                         headers: {
                             "Authorization": `Bearer ${token}`,
                         },
                     });
                 })
             );
-    
-            alert("Xác nhận thành công!");
+            dispatch(LoadSupplierDkBanHang());
         } catch (error) {
             console.error("Lỗi khi xác nhận:", error);
         }
+        finally {
+            setLoading(false);
+        }
     };
-    
+
 
     return (
         <View style={styles.container}>
@@ -76,16 +91,17 @@ const XacNhanDangKiBanHangChoKhachHang = () => {
                     SupplierDkBanHang.map((supplier) => (
                         <Card key={supplier.id} style={{ marginBottom: 10 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Checkbox
-                                    status={checkedItems[supplier.id] ? 'checked' : 'unchecked'}
-                                    onPress={() => toggleCheckbox(supplier.id)}
-                                />
-                                <Image source={{ uri: supplier?.user?.avatar}}
-                                       style={{ width: 80, height: 80, marginLeft: 10, borderRadius: 10 }} />
+
+                                <Image source={{ uri: supplier?.user?.avatar }}
+                                    style={{ width: 80, height: 80, borderRadius: 10 }} />
                                 <View style={{ marginLeft: 10, flex: 1 }}>
                                     <Text style={{ fontSize: 14, fontWeight: 'bold' }}>{supplier.CompanyName}</Text>
                                     <Text style={{ fontSize: 12 }}>Mô tả: {supplier.Description}</Text>
                                 </View>
+                                <Checkbox
+                                    status={checkedItems[supplier.id] ? 'checked' : 'unchecked'}
+                                    onPress={() => toggleCheckbox(supplier.id)}
+                                />
                             </View>
                         </Card>
                     ))
@@ -95,14 +111,17 @@ const XacNhanDangKiBanHangChoKhachHang = () => {
             </ScrollView>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, alignItems: 'center' }}>
+                <Text>Chọn tất cả</Text>
                 <Checkbox
                     status={Object.values(checkedItems).every(value => value) ? 'checked' : 'unchecked'}
                     onPress={toggleAllCheckboxes}
                 />
-                <Text>Chọn tất cả</Text>
+
             </View>
 
-            <Button mode="contained" style={styles.button} onPress = {XacNhanDKBanHang}>Xác nhận</Button>
+            <Button mode="contained" style={styles.button} onPress={XacNhanDKBanHang} loading={loading}>
+                {loading ? "Đang xác nhận...": "Xác nhận"}
+            </Button>
         </View>
     );
 };

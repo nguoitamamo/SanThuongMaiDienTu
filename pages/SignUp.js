@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Appbar, Button, Card, Avatar, TextInput } from "react-native-paper";
+import { Appbar, Button, Card, Avatar, TextInput, ActivityIndicator } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DropDownPicker from "react-native-dropdown-picker";
 import * as ImagePicker from "expo-image-picker";
@@ -24,7 +24,7 @@ const SignUp = () => {
         { label: "Cá nhân", value: "0" },
         { label: "Tiểu thương hoặc danh nghiệp", value: "1" }
     ]);
-    const [newImage, setNewImage] =  useState({ name: "", image: "", type: "" });
+    const [newImage, setNewImage] = useState({ name: "", image: "", type: "" });
 
     const navigation = useNavigation();
 
@@ -62,11 +62,14 @@ const SignUp = () => {
         console.log(items[0].label);
     }, [newImage])
 
+    const [loading, setLoading] = useState(false);
+
 
     const SignUpUser = async () => {
 
         try {
 
+            setLoading(true);
             let formData = new FormData();
             formData.append('avatar', {
                 uri: newImage.image,
@@ -96,10 +99,14 @@ const SignUp = () => {
             setusername();
             setaddress();
             setrole();
+
             return navigation.navigate("SignIn");
-        } 
-        catch(error){
+        }
+        catch (error) {
             console.log(error);
+        }
+        finally {
+            setLoading(false);
         }
 
 
@@ -175,8 +182,8 @@ const SignUp = () => {
 
 
 
-                        <Button mode="contained" style={styles.button} onPress={SignUpUser}>
-                            Đăng Ký
+                        <Button mode="contained" style={styles.button} onPress={SignUpUser} loading={loading}>
+                            {loading ? "Đang đăng ký..." : "Đăng ký"}
                         </Button>
                     </ScrollView>
                 </KeyboardAwareScrollView>

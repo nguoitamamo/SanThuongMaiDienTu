@@ -30,7 +30,7 @@ const SignIn = () => {
     const navigation = useNavigation();
     useEffect(() => {
         if (user) {
-            navigation.navigate("App");
+            navigation.navigate("AppMain");
             // <App/> 
         }
     }, [user]);

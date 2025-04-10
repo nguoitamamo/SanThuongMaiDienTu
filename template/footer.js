@@ -25,7 +25,6 @@ import KhuyenMai from "../pages/taikhoanComponent/CuaHang/KhuyenMai";
 import QuanLiCuaHang from "../pages/taikhoanComponent/CuaHang/QuanLiCuaHang";
 import ChiTietSanPham from "../pages/ChiTietSanPham";
 import Allcomment from "../pages/Allcomment";
-import App from "../App";
 import ThanhToan from "../pages/ThanhToan";
 
 
@@ -173,7 +172,7 @@ const MainStack = () => (
         ),
       })}
     />
-    <Stack.Screen name="App" component={MainStack} />
+    <Stack.Screen name="AppMain" component={MainStack} />
     <Stack.Screen
       name="ThanhToan"
       component={ThanhToan}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
-import InfoSupplier from "../../components/supplier";
+import InfoBase from "../../components/supplier";
 import { useSelector } from "react-redux";
 import { Button, Menu, Divider, PaperProvider, Text, Card } from "react-native-paper";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,7 +8,6 @@ import API, { endpoints } from "../../../Networking/API";
 
 
 const ThongKeCuaHang = () => {
-    const info = useSelector((state) => state.user.supplier);
     const [visible, setVisible] = useState(false);
     const [active, setActive] = useState("");
     const [selectedOption, setSelectedOption] = useState(null);
@@ -65,7 +64,7 @@ const ThongKeCuaHang = () => {
     return (
         <PaperProvider>
             <View style={styles.container}>
-                <InfoSupplier info={info} />
+                <InfoBase user={user} />
                 <View style={styles.menuContainer}>
                     <Menu
                         visible={visible}
