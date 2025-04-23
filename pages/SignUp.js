@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Appbar, Button, Card, Avatar, TextInput, ActivityIndicator } from "react-native-paper";
+import { Appbar, Button, Card, Avatar, TextInput, ActivityIndicator, HelperText } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DropDownPicker from "react-native-dropdown-picker";
 import * as ImagePicker from "expo-image-picker";
@@ -24,89 +24,174 @@ const SignUp = () => {
         { label: "Cá nhân", value: "0" },
         { label: "Tiểu thương hoặc danh nghiệp", value: "1" }
     ]);
-    const [newImage, setNewImage] = useState({ name: "", image: "", type: "" });
+
+    const info = [{
+        label: 'Họ',
+        icon: "text",
+        secureTextEntry: false,
+        field: "last_name"
+    }, {
+        label: 'Tên',
+        icon: "text",
+        secureTextEntry: false,
+        field: "first_name"
+    }, {
+        label: 'Tên đăng nhập',
+        icon: "text",
+        secureTextEntry: false,
+        field: "username"
+    }, {
+        label: 'Mật khẩu',
+        icon: "eye",
+        secureTextEntry: true,
+        field: "password"
+    }, {
+        label: 'Xác nhận mật khẩu',
+        icon: "eye",
+        secureTextEntry: true,
+        field: "confirm"
+    },
+    {
+        label: 'Địa chỉ',
+        icon: "text",
+        secureTextEntry: true,
+        field: "address"
+    },
+    {
+        label: 'Email',
+        icon: "text",
+        secureTextEntry: true,
+        field: "email"
+    }
+                
+                 ];
+    const [user, setUser] = useState({});
+    const [loading, setLoading] = useState(false);
+
+    const setState = (value, field) => {
+        setUser({...user, [field]: value});
+    }
+    
+    // const [newImage, setNewImage] = useState({ name: "", image: "", type: "" });
 
     const navigation = useNavigation();
 
-    const pickImage = async () => {
-        console.log("Đã vào đây");
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
+    // const pickImage = async () => {
+    //     console.log("Đã vào đây");
+    //     let result = await ImagePicker.launchImageLibraryAsync({
+    //         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    //         allowsEditing: true,
+    //         aspect: [4, 3],
+    //         quality: 1,
+    //     });
 
-        if (!result.canceled) {
+    //     if (!result.canceled) {
 
-            const imageUri = result.assets[0].uri;
-            let localUri = result.assets[0].uri;
-            let filename = localUri.split('/').pop(); // Lấy tên file
+    //         const imageUri = result.assets[0].uri;
+    //         let localUri = result.assets[0].uri;
+    //         let filename = localUri.split('/').pop(); // Lấy tên file
 
-            let match = /\.(\w+)$/.exec(filename);
-            let fileType = match ? `image/${match[1]}` : `image`;
+    //         let match = /\.(\w+)$/.exec(filename);
+    //         let fileType = match ? `image/${match[1]}` : `image`;
 
 
-            setNewImage({
-                name: filename,
-                image: imageUri,
-                type: fileType,
-            });
+    //         setNewImage({
+    //             name: filename,
+    //             image: imageUri,
+    //             type: fileType,
+    //         });
 
+    //     }
+    // };
+
+    const picker = async () => {
+        let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (status !== 'granted') {
+            alert("Permissions denied!");
+        } else {
+            const result = await ImagePicker.launchImageLibraryAsync();
+
+            if (!result.canceled)
+                setState(result.assets[0], "avatar");
         }
-    };
+    }
 
+    
 
-    useEffect(() => {
-        console.log(newImage);
-        console.log(items[0].label);
-    }, [newImage])
+    // useEffect(() => {
+    //     console.log(newImage);
+    //     console.log(items[0].label);
+    // }, [newImage])
 
-    const [loading, setLoading] = useState(false);
+  
+    const validate = () => {
+        
+        if (!user?.username || !user?.password || !user?.address || !user?.email) {
+            setMsg("Vui lòng nhập tên đăng nhập và mật khẩu!");
+            return false;
+        } else if (user.password !== user.confirm) {
+            setMsg("Mật khẩu KHÔNG khớp!");
+            return false;
+        }
+        setMsg(null);
+        
+        return true;
+    }
 
 
     const SignUpUser = async () => {
+        if ( validate === true ) { 
+            try {
+    
+                setLoading(true);
+                let formData = new FormData();
+                // formData.append('avatar', {
+                //     uri: newImage.image,
+                //     name: newImage.name,
+                //     type: newImage.type
+                // });
+                // formData.append("username", username);
+                // formData.append("password", password);
+                // formData.append("first_name", first_name);
+                // formData.append("last_name", last_name);
+                // formData.append("email", email);
+                // formData.append("address", address);
+                // formData.append("role", items[role].label);
 
-        try {
-
-            setLoading(true);
-            let formData = new FormData();
-            formData.append('avatar', {
-                uri: newImage.image,
-                name: newImage.name,
-                type: newImage.type
-            });
-            formData.append("username", username);
-            formData.append("password", password);
-            formData.append("first_name", first_name);
-            formData.append("last_name", last_name);
-            formData.append("email", email);
-            formData.append("address", address);
-            formData.append("role", items[role].label);
-
-            console.log(formData);
-
-            await API.post(endpoints.users + "signup/", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
+                for (let key in user) {
+                    if (key !== 'confirm') {
+                        if (key === 'avatar' && user?.avatar !== null) {
+                            form.append(key, {
+                                uri: user.avatar.uri,
+                                name: user.avatar.fileName,
+                                type: user.avatar.type
+                            });
+                        } else {
+                            form.append(key, user[key]);
+                        }
+                    }
                 }
-            })
 
-            setfirst_name();
-            setlast_name();
-            setEmail();
-            setpassword();
-            setusername();
-            setaddress();
-            setrole();
-
-            return navigation.navigate("SignIn");
-        }
-        catch (error) {
-            console.log(error);
-        }
-        finally {
-            setLoading(false);
+                formData.append("role", items[role].label);
+                
+                console.log(formData);
+    
+                await API.post(endpoints.users + "signup/", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
+                })
+    
+                setUser({});
+                return navigation.navigate("SignIn");
+            }
+            catch (error) {
+                console.log(error);
+            }
+            finally {
+                setLoading(false);
+            }
         }
 
 
@@ -121,15 +206,19 @@ const SignUp = () => {
                     <Appbar.Content title="Tài khoản" titleStyle={styles.headerTitle} />
                 </Appbar.Header>
 
-
+            
 
                 <View style={styles.avatarContainer}>
                     <Avatar.Image size={100} source={{ uri: newImage.image || 'https://res.cloudinary.com/dxw8gtpd8/image/upload/v1742716253/bj1op6ixbnhez9vycham.jpg' }} />
-                    <TouchableOpacity onPress={pickImage}>
+                    <TouchableOpacity onPress={picker}>
                         <Text style={styles.changeAvatar}>Thay đổi hình đại diện</Text>
                     </TouchableOpacity>
                 </View>
+                <HelperText type="error" visible={msg}>
+                    {msg}
+                </HelperText>
 
+    
                 <DropDownPicker
                     open={open}
                     value={role}
@@ -146,12 +235,21 @@ const SignUp = () => {
                 >
                     <ScrollView>
                         <View style={{ gap: 12 }}>
-                            <TextInput label="Họ" value={last_name} onChangeText={setlast_name} mode="outlined" />
-                            <TextInput label="Tên" value={first_name} onChangeText={setfirst_name} mode="outlined" />
-                            <TextInput label="Tên tài khoản" value={username} onChangeText={setusername} mode="outlined" />
-                            <TextInput label="Mật khẩu" value={password} onChangeText={setpassword} mode="outlined" />
-                            <TextInput label="Email" value={email} onChangeText={setEmail} mode="outlined" />
-                            <TextInput label="Thành phố/Tỉnh" value={address} onChangeText={setaddress} mode="outlined" />
+                            // <TextInput label="Họ" value={last_name} onChangeText={setlast_name} mode="outlined" />
+                            // <TextInput label="Tên" value={first_name} onChangeText={setfirst_name} mode="outlined" />
+                            // <TextInput label="Tên tài khoản" value={username} onChangeText={setusername} mode="outlined" />
+                            // <TextInput label="Mật khẩu" value={password} onChangeText={setpassword} mode="outlined" />
+                            // <TextInput label="Email" value={email} onChangeText={setEmail} mode="outlined" />
+                            // <TextInput label="Thành phố/Tỉnh" value={address} onChangeText={setaddress} mode="outlined" />
+                         {info.map(i => 
+                                   <TextInput value={user[i.field]} 
+                                              onChangeText={t => setState(t, i.field)} 
+                                              key={i.field} 
+                                              label={i.label} 
+                                              secureTextEntry={i.secureTextEntry} 
+                                              mode="outlined"
+                                              right={<TextInput.Icon icon={i.icon} />}
+                                               />)}
                         </View>
 
 
