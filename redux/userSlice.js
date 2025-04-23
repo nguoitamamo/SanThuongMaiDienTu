@@ -6,6 +6,32 @@ import API, { endpoints } from "../Networking/API";
 
 
 
+export const GetCurrentUser = createAsyncThunk("users/currentuser", async (_, {getState , rejectWithValue }) => {
+  try {
+
+    const state = getState();
+    let token = state.user.token;
+    // const formData = new FormData();
+    // formData.append("username", username);
+    // formData.append("password", password);
+
+    const user = await API.post(endpoints.users + "current-user/", {
+     headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+
+
+    return user.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || "Lỗi không xác định");
+  }
+}
+);
+
+
+
+
 export const getToken = async (username, password) => {
   try {
     const formData = new FormData();
@@ -15,11 +41,10 @@ export const getToken = async (username, password) => {
     formData.append("client_id", "kmFU6SfP5tlxLl32F40efKFzunsnQxqfAwxpdjTI");
     formData.append("client_secret", "9hXxO3WhrLLCG1D8cZ9Ythz7UfGbp4GUT8nFZcGxICgb0QHodXAbudLLwb4R74RJZoCrhIEwXVJenHvHUzikyNmSAKMMWUuKfHkFEyXlWuiKoR0ekqjuLIB7oiQyAF2B");
 
-    const res = await API.post("/o/token/", formData, {
+    const token = await API.post("/o/token/", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-
-    return res.data.access_token;
+    return token.data.access_token;
   } catch (error) {
     throw error.response?.data || "Lỗi khi lấy token";
   }
@@ -39,37 +64,6 @@ export const SupplierInfo = async (id) => {
 
 
 
-
-export const loginUser = createAsyncThunk("users/login", async ({ username, password }, { rejectWithValue }) => {
-  try {
-
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-
-    const res = await API.post(endpoints.users + "login/", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      }
-    });
-
-    const token = await getToken(username, password); 
-
-
-    let supplier = null;
-
-    // if (res.data.role === "Supplier") {
-
-    //   supplier = await SupplierInfo(res.data.id);
-    // }
-
-
-    return { user: res.data, token };
-  } catch (error) {
-    return rejectWithValue(error.response?.data || "Lỗi không xác định");
-  }
-}
-);
 
 export const LoadStateOrder = createAsyncThunk("stateorder/StateOrder",
   async (_, { rejectWithValue }) => {
@@ -159,22 +153,29 @@ const userSlice = createSlice({
   initialState: { user: null, loading: false, error: null, token: null, category: null, stateorder: [], suggestproducts: []},
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.user = action.payload.user;
+      .addCase(getToken.fulfilled, (state, action) => {
         state.token = action.payload.token;
-        // state.supplier = action.payload.supplier;
+        state.loading = false;
+        console.log("token: " + state.token);
+      })
+      .addCase(getToken.rejected, (state) => {
+        state.token = null;
+        state.loading = false;
+        console.log("token: " + state.token);
+      })
+      .addCase(GetCurrentUser.fulfilled, (state, action) => {
+        state.user = action.payload.user;
         state.loading = false;
 
         console.log("ID user" + state.user.id);
         console.log("token: " + state.token);
       })
-      .addCase(loginUser.pending, (state) => {
+      .addCase(GetCurrentUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
 
-      .addCase(loginUser.rejected, (state, action) => {
-        console.log("lỗi");
+      .addCase(GetCurrentUser.rejected, (state) => {
         state.error = true;
         state.loading = false;
       })
